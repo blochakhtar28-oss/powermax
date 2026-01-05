@@ -1,0 +1,269 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PowerMax</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: Arial, sans-serif;
+}
+
+body{
+    min-height:100vh;
+    background: linear-gradient(180deg,
+        #4b1d3f,
+        #6a255a,
+        #8a2d5f,
+        #f08a3c
+    );
+    display:flex;
+    justify-content:center;
+    padding:20px;
+    color:#ffffff;
+}
+
+.container{
+    width:100%;
+    max-width:420px;
+}
+
+.title{
+    text-align:center;
+    font-size:28px;
+    font-weight:700;
+    margin:25px 0 10px;
+    color:#ffffff;
+    text-shadow:0 0 12px rgba(255,255,255,0.6);
+}
+
+.title span{
+    color:#ffd54f;
+}
+
+.subtitle{
+    text-align:center;
+    font-size:15px;
+    line-height:1.5;
+    opacity:0.95;
+    margin-bottom:18px;
+}
+
+.box{
+    background: rgba(255,140,170,0.18);
+    border-radius:18px;
+    padding:18px;
+    margin-bottom:16px;
+    backdrop-filter: blur(8px);
+}
+
+.box-title{
+    font-size:16px;
+    font-weight:600;
+    margin-bottom:10px;
+    color:#a7ffeb;
+}
+
+.box ul{
+    list-style:none;
+    font-size:14px;
+    line-height:1.8;
+}
+
+.box li{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.btn{
+    width:100%;
+    padding:14px;
+    border-radius:30px;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    margin-top:12px;
+    background:transparent;
+}
+
+.google{
+    color:#ffffff;
+    border:2px solid #4da3ff;
+}
+
+.whatsapp{
+    color:#ffffff;
+    border:2px solid #25d366;
+}
+
+.ref-title{
+    margin-top:5px;
+    font-size:16px;
+    font-weight:600;
+    color:#80deea;
+}
+
+.footer{
+    text-align:center;
+    margin-top:18px;
+    font-size:13px;
+    opacity:0.9;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="title">⚡ Power<span>Max</span> ⚡</div>
+
+    <div class="subtitle">
+        PowerMax ⚡ ek smart earning platform hai jahan users plants activate
+        karke referral se income earn karte hain 💰
+    </div>
+
+    <div class="box">
+        <div class="box-title">💰 Earning Rules</div>
+        <ul>
+            <li>✔ Plant active hona lazmi hai</li>
+            <li>✔ Referral jab plant buy kare</li>
+            <li>✔ Aapko commission milega</li>
+            <li>❌ Inactive plant = no earning</li>
+            <li>⏳ Plant 30 din baad expire hota hai</li>
+        </ul>
+    </div>
+
+    <!-- GOOGLE SIGN IN -->
+    <button class="btn google" onclick="googleLogin()">
+        🔐 Sign in with Google
+    </button>
+
+    <!-- WHATSAPP CHANNEL -->
+    <a href="https://whatsapp.com/channel/0029Vb7we2c7dmeRYEoViE0G" target="_blank">
+        <button class="btn whatsapp">
+            📲 Join WhatsApp Channel
+        </button>
+    </a>
+
+    <div class="box">
+        <div class="ref-title">👥 Referral System</div>
+        <ul>
+            <li>🔹 Level 1: Active plant commission</li>
+            <li>🔹 Level 2: Fix 3% (show only)</li>
+            <li>⚠ Plant active hona zaroori</li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        ⚡ Official PowerMax ⚡ Platform
+    </div>
+
+</div>
+
+<!-- FIREBASE GOOGLE AUTH -->
+<script type="module">
+  // 🔗 REF CODE READ
+const params = new URLSearchParams(window.location.search);
+const refCode = params.get("ref");
+
+// temporary store (signup ke baad use hoga)
+if (refCode) {
+  localStorage.setItem("refBy", refCode);
+}
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCzHxyLgn9ZKRwD1X0RuUSq3od6MWizieg",
+    authDomain: "powermax-fe149.firebaseapp.com",
+    projectId: "powermax-fe149",
+    storageBucket: "powermax-fe149.firebasestorage.app",
+    messagingSenderId: "4028356676",
+    appId: "1:4028356676:web:dce4027e9f215cf4178411"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+  import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+  serverTimestamp,
+  collection,
+  query,
+  where,
+  getDocs,
+  updateDoc,
+  increment
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const db = getFirestore(app);
+
+// 🔹 PMX + 6 random characters
+function generateRefCode() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let code = "PMX";
+  for (let i = 0; i < 6; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return code;
+}
+
+  window.googleLogin = async function () {
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+
+    const userRef = doc(db, "users", user.uid);
+    const snap = await getDoc(userRef);
+
+    // 🔹 first time signup
+    if (!snap.exists()) {
+      const myRefCode = generateRefCode();
+      const referredBy = localStorage.getItem("refBy") || null;
+
+      await setDoc(userRef, {
+        email: user.email,
+        uid: user.uid,
+        refCode: myRefCode,
+        referredBy: referredBy,
+        balance: 0,
+        level1Count: 0,
+        createdAt: serverTimestamp()
+      });
+
+      // 🔥 LEVEL 1 referral count (REAL)
+      if (referredBy) {
+        const q = query(
+          collection(db, "users"),
+          where("refCode", "==", referredBy)
+        );
+
+        const qsnap = await getDocs(q);
+        qsnap.forEach(async (docu) => {
+          await updateDoc(doc(db, "users", docu.id), {
+            level1Count: increment(1)
+          });
+        });
+      }
+    }
+
+    localStorage.removeItem("refBy");
+    window.location.href = "dashboard.html";
+
+  } catch (err) {
+    alert(err.message);
+  }
+};
+</script>
+
+</body>
+</html>

@@ -1,0 +1,81 @@
+kkkkkkkkkkkk<select id="walletType" onchange="updateWalletNumber()">
+  <option value="jazzcash">JazzCash</option>
+  <option value="easypaisa">EasyPaisa</option>
+</select>
+
+<label>Wallet Number (Send To)</label>
+<input id="walletNumber" readonly>
+
+<label>Wallet Owner Name (Sent From)</label>
+<input placeholder="Enter wallet owner name">
+
+<label>Your Wallet Number (Sent From)</label>
+<input placeholder="03XXXXXXXXX">
+
+<div class="popup-actions">
+<button class="confirm">Confirm Request</button>
+<button class="cancel" onclick="closePopup()">Cancel</button>
+</div>`;
+}
+window.updateWalletNumber = () => {
+  const type = document.getElementById("walletType").value;
+  const input = document.getElementById("walletNumber");
+
+  if (type === "jazzcash") {
+    input.value = "03090447488";
+  } else {
+    input.value = "03008775258";
+  }
+};
+
+window.openWithdraw=()=>{
+popup.style.display="flex";
+popupContent.innerHTML=`
+<h3>Withdraw Funds</h3>
+<small>View Withdraw Status</small>
+
+<small>Minimum withdrawal: 50 pts</small>
+
+<label>Amount (Min 50 pts)</label>
+<input placeholder="Enter amount">
+
+<label>Withdraw Method</label>
+<select><option>JazzCash</option><option>EasyPaisa</option></select>
+
+<label>Wallet Owner Name</label>
+<input placeholder="Enter your registered name">
+
+<label>Account Number (JazzCash / EasyPaisa)</label>
+<input placeholder="Enter 11 digit account number">
+
+<div class="popup-actions">
+<button class="confirm">Request Withdraw</button>
+<button class="cancel" onclick="closePopup()">Cancel</button>
+</div>`;
+}
+
+window.closePopup=()=>popup.style.display="none";
+// REFER POPUP
+window.openRefer = ()=>{
+  referPopup.style.display="flex";
+
+  const uid = auth.currentUser.uid.slice(0,6);
+  const link = `https://powermax.com/?ref=${uid}`;
+
+  document.getElementById("refLink").value = link;
+};
+
+window.closeRefer = ()=>{
+  referPopup.style.display="none";
+};
+
+window.copyRef = ()=>{
+  const input = document.getElementById("refLink");
+  input.select();
+  document.execCommand("copy");
+  alert("Referral link copied");
+};
+</script>
+
+</body>
+</html>

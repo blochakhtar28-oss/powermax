@@ -1,0 +1,588 @@
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PowerMax Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{box-sizing:border-box;font-family:"Segoe UI",Arial,sans-serif;margin:0;padding:0}
+body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-content:center;padding:20px;color:#1f2d3d}
+.container{width:100%;max-width:420px}
+.header{text-align:center;font-size:24px;font-weight:700;margin-bottom:14px;color:#0a66ff}
+
+.user-box{background:#fff;border-radius:14px;padding:14px;text-align:center;box-shadow:0 8px 20px rgba(0,0,0,.06);margin-bottom:18px;font-size:14px}
+.user-box div{margin:4px 0}
+
+.plan{display:flex;justify-content:space-between;align-items:center;padding:14px;border-radius:14px;margin-bottom:12px;box-shadow:0 6px 16px rgba(0,0,0,.06)}
+.plan small{display:block;font-size:12px;opacity:.8}
+.plan button{padding:8px 16px;border:none;border-radius:22px;cursor:pointer;font-weight:600}
+.btn-active{background:#e8eef6}
+.btn-on{background:#00c853;color:#fff}
+
+.p50{background:#e8f5e9}
+.p100{background:#fff3e0}
+.p300{background:#f3e5f5}
+.p500{background:#e3f2fd}
+.p1000{background:#ede7f6}
+.p2000{background:#fce4ec}
+.p3000{background:#e0f2f1}
+.p5000{background:#eceff1}
+
+.active-box{display:none;background:#fff;border-radius:14px;padding:14px;margin-top:14px;box-shadow:0 6px 16px rgba(0,0,0,.08);font-size:14px}
+.active-box h3{text-align:center;margin-bottom:10px;color:#0a66ff}
+
+.actions{margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.actions button{padding:12px;border:none;border-radius:26px;font-weight:600;color:#fff;cursor:pointer}
+.refer{background:#6a11cb}
+.deposit{background:#11998e}
+.withdraw{background:#ff512f}
+.support{background:#25d366}
+
+.logout{margin-top:18px;width:100%;padding:12px;border:none;border-radius:26px;background:#ff4b2b;color:#fff;font-weight:600;cursor:pointer}
+
+/* POPUP */
+.popup{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);justify-content:center;align-items:center;z-index:1000}
+.popup-box{background:#fff;width:90%;max-width:400px;border-radius:20px;padding:18px}
+.popup-box h3{text-align:center}
+.popup-box small{text-align:center;display:block;color:#777;margin-bottom:10px}
+.popup-box label{font-size:13px;font-weight:600;margin-top:10px;display:block}
+.popup-box input,.popup-box select{width:100%;padding:10px;margin-top:6px;border-radius:10px;border:1px solid #ccc}
+.popup-actions{display:flex;gap:10px;margin-top:16px}
+.confirm{flex:1;background:#ff512f;color:#fff;border:none;padding:12px;border-radius:25px}
+.cancel{flex:1;background:#eee;border:none;padding:12px;border-radius:25px}
+/* REFER POPUP */
+.refer-box h3{
+  color:#0a66ff;
+  margin-bottom:6px
+}
+.copy-btn{
+  background:#2ecc71;
+  color:#fff;
+  border:none;
+  padding:10px 14px;
+  border-radius:12px;
+  font-weight:600;
+  cursor:pointer
+}
+.team-box{
+  background:#eef9ee;
+  border-radius:12px;
+  padding:12px;
+  margin-top:12px;
+  font-size:14px
+}
+.team-box b{display:block}
+.team-box span{
+  float:right;
+  font-size:13px
+}
+.level2{background:#f1f9f1}
+.empty{
+  margin-top:8px;
+  background:#eaf6ea;
+  padding:14px;
+  border-radius:10px;
+  text-align:center;
+  color:#777
+}
+.close-btn{
+  margin-top:14px;
+  width:100%;
+  padding:12px;
+  border-radius:22px;
+  border:2px solid #6c8ea0;
+  background:#fff;
+  font-weight:600;
+  cursor:pointer
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<div class="header">⚡ PowerMax Dashboard ⚡</div>
+
+<div class="user-box">
+  <div><b>User ID:</b> <span id="userId">Loading...</span></div>
+  <div><b>Balance:</b> <span id="userBalance">0</span> PTS</div>
+  <div id="useremail">Loading...</div>
+</div>
+
+<!-- ALL PTS PLANTS -->
+<div class="plan p50"><div>50 PTS Plant <small>Commission 40%</small></div><button class="btn-active" onclick="activatePlan('50 PTS',40,this)">Activate</button></div>
+<div class="plan p100"><div>100 PTS Plant <small>Commission 45%</small></div><button class="btn-active" onclick="activatePlan('100 PTS',45,this)">Activate</button></div>
+<div class="plan p300"><div>300 PTS Plant <small>Commission 50%</small></div><button class="btn-active" onclick="activatePlan('300 PTS',50,this)">Activate</button></div>
+<div class="plan p500"><div>500 PTS Plant <small>Commission 60%</small></div><button class="btn-active" onclick="activatePlan('500 PTS',60,this)">Activate</button></div>
+<div class="plan p1000"><div>1000 PTS Plant <small>Commission 60%</small></div><button class="btn-active" onclick="activatePlan('1000 PTS',60,this)">Activate</button></div>
+<div class="plan p2000"><div>2000 PTS Plant <small>Commission 60%</small></div><button class="btn-active" onclick="activatePlan('2000 PTS',60,this)">Activate</button></div>
+<div class="plan p3000"><div>3000 PTS Plant <small>Commission 60%</small></div><button class="btn-active" onclick="activatePlan('3000 PTS',60,this)">Activate</button></div>
+<div class="plan p5000"><div>5000 PTS Plant <small>Commission 60%</small></div><button class="btn-active" onclick="activatePlan('5000 PTS',60,this)">Activate</button></div>
+
+<div class="active-box" id="activeBox"></div>
+
+<div class="actions">
+  <button class="refer" onclick="openRefer()">Refer & Earn</button>
+  <button class="deposit" onclick="openDeposit()">Deposit</button>
+  <button class="withdraw" onclick="openWithdraw()">Withdraw</button>
+  <button class="support" onclick="openWhatsAppSupport()">
+  WhatsApp Support
+</button>
+</div>
+
+<button class="logout" onclick="logout()">Logout</button>
+</div>
+
+<!-- POPUP -->
+<div class="popup" id="popup">
+  <div class="popup-box" id="popupContent"></div>
+</div>
+<!-- REFER POPUP -->
+<div class="popup" id="referPopup">
+  <div class="popup-box refer-box">
+    <h3>👥 Referral Team & Commission</h3>
+    <small>Share this link to grow your team.</small>
+
+    <label>Your Referral Link</label>
+    <div style="display:flex;gap:8px;">
+      <input id="refLink" readonly>
+      <button class="copy-btn" onclick="copyRef()">Copy</button>
+    </div>
+
+    <div class="team-box level1">
+      <b>Level 1 Team (Direct)</b>
+      <span>(Total: <span id="lvl1count">0</span>)</span>
+      <div class="empty">No members yet.</div>
+    </div>
+
+    <div class="team-box level2">
+      <b>Level 2 Team (Indirect - Flat 3%)</b>
+      <span>(Total: 0)</span>
+      <div class="empty">No members yet.</div>
+    </div>
+
+    <button class="close-btn" onclick="closeRefer()">Close</button>
+  </div>
+</div>
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { 
+  getAuth,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+  updateDoc,
+  increment,
+  collection,
+  query,
+  where,
+  getDocs,
+  addDoc   // 👈 ADD THIS
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCzHxyLgn9ZKRwD1X0RuUSq3od6MWizieg",
+  authDomain: "powermax-fe149.firebaseapp.com",
+  projectId: "powermax-fe149"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const activeBox = document.getElementById("activeBox");
+// 🔹 Save user in Firestore
+function generateRefCode() {
+  return "PMX" + Math.random().toString(36).substring(2,8).toUpperCase();
+}
+function getReferralCodeFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("ref"); // null if not exists
+}
+
+async function saveUser(u) {
+  const ref = doc(db, "users", u.uid);
+  const snap = await getDoc(ref);
+
+  if (!snap.exists()) {
+    const referredBy = getReferralCodeFromURL();
+
+await setDoc(ref, {
+  email: u.email,
+  balance: 0,
+  refCode: generateRefCode(),
+  referredBy: referredBy || null,
+  createdAt: new Date().toISOString()
+});
+  }
+}
+
+/* 🔐 USER CHECK */
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    location.href = "index.html";
+    return;
+  }
+
+  // 🔹 email show
+  document.getElementById("useremail").innerText = user.email;
+
+  // 🔹 pehle ensure user saved ho
+  await saveUser(user);
+
+  // 🔹 ab Firestore se real data load
+  const userRef = doc(db, "users", user.uid);
+  const snap = await getDoc(userRef);
+
+  if (snap.exists()) {
+    document.getElementById("userBalance").innerText =
+      snap.data().balance ?? 0;
+
+    document.getElementById("userId").innerText =
+      snap.data().refCode ?? "NO REF";
+      const plantRef = doc(db, "users", user.uid, "plants", "active");
+  const plantSnap = await getDoc(plantRef);
+
+  if (plantSnap.exists()) {
+    const p = plantSnap.data();
+
+    activeBox.style.display = "block";
+    activeBox.innerHTML = `
+      <h3>Active PTS Plant Details</h3>
+      <b>Plan:</b> ${p.planName}<br>
+      <b>Commission:</b> ${p.commission}%<br><br>
+      <b>Activated:</b><br>${new Date(p.activatedAt).toLocaleString()}<br><br>
+      <b>Expiry:</b><br>${new Date(p.expiryAt).toLocaleString()}
+    `;
+  }
+  }
+});
+
+
+
+window.openWhatsAppSupport = () => {
+  const user = auth.currentUser;
+
+  if (!user) {
+    alert("User not logged in");
+    return;
+  }
+
+  const name = user.email; 
+const uid = document.getElementById("userId").innerText;
+  const balance = document.getElementById("userBalance").innerText;
+
+  const message = `Hello PowerMax Support, I need assistance.
+
+*Account Details:*
+Name: ${name}
+UID: ${uid}
+Balance: ${balance} pts
+
+My Query is: `;
+
+  const phone = "923008775258"; // اپنا WhatsApp number
+  const url = "https://wa.me/" + phone + "?text=" + encodeURIComponent(message);
+
+  window.open(url, "_blank");
+};
+window.logout=()=>signOut(auth).then(()=>location.href="index.html");
+window.activatePlan = async (planName, commission, btn) => {
+  const user = auth.currentUser;
+  if (!user) {
+    alert("User not logged in");
+    return;
+  }
+
+  const plantRef = doc(db, "users", user.uid, "plants", "active");
+
+  // 🔒 Duplicate check
+  const existingPlantSnap = await getDoc(plantRef);
+  if (existingPlantSnap.exists()) {
+    const data = existingPlantSnap.data();
+    if (new Date(data.expiryAt) > new Date()) {
+      alert("Plant already active. Wait until expiry.");
+      return;
+    }
+  }
+
+  const start = new Date();
+  const expiry = new Date();
+  expiry.setDate(start.getDate() + 30);
+  // 🔒 LOW BALANCE CHECK
+const plantPts = parseInt(planName.split(" ")[0]);
+
+const balanceSnap = await getDoc(doc(db, "users", user.uid));
+const balance = balanceSnap.data().balance || 0;
+
+if (balance < plantPts) {
+  alert("Low Balance");
+  return;
+}
+// 💸 CUT USER BALANCE
+await updateDoc(doc(db, "users", user.uid), {
+  balance: increment(-plantPts)
+});
+
+  // ✅ Save plant
+  await setDoc(plantRef, {
+    planName,
+    commission,
+    activatedAt: start.toISOString(),
+    expiryAt: expiry.toISOString()
+  });
+
+  // 🔥 COMMISSION LOGIC (FINAL — AS PER RULES)
+
+
+/* =========================
+   1️⃣ DIRECT COMMISSION (30%)
+   ONLY FOR THE USER
+========================= */
+
+const DIRECT_COMMISSION = 30;
+const selfCommission = plantPts * (DIRECT_COMMISSION / 100);
+
+await updateDoc(doc(db, "users", user.uid), {
+  balance: increment(selfCommission)
+});
+
+/* =========================
+   2️⃣ REFERRAL COMMISSION
+   BASED ON REFERRER PLAN
+========================= */
+
+const userRef = doc(db, "users", user.uid);
+const userSnap = await getDoc(userRef);
+
+if (userSnap.exists()) {
+  const referredBy = userSnap.data().referredBy;
+
+  if (referredBy) {
+    const q = query(
+      collection(db, "users"),
+      where("refCode", "==", referredBy)
+    );
+
+    const qsnap = await getDocs(q);
+
+    for (const refDoc of qsnap.docs) {
+      // referrer commission = based on HIS active plan
+      const refCommission = plantPts * (commission / 100);
+
+      await updateDoc(doc(db, "users", refDoc.id), {
+        balance: increment(refCommission)
+      });
+    }
+  }
+}
+
+  // 🔄 UI update
+  document.querySelectorAll(".plan button").forEach(b => {
+    b.className = "btn-active";
+    b.innerText = "Activate";
+  });
+
+  btn.className = "btn-on";
+  btn.innerText = "Active";
+
+  activeBox.style.display = "block";
+  activeBox.innerHTML = `
+    <h3>Active PTS Plant Details</h3>
+    <b>Plan:</b> ${planName}<br>
+    <b>Commission:</b> ${commission}%<br><br>
+    <b>Activated:</b><br>${start.toLocaleString()}<br><br>
+    <b>Expiry:</b><br>${expiry.toLocaleString()}
+  `;
+};
+
+window.openDeposit=()=>{
+popup.style.display="flex";
+popupContent.innerHTML=`
+<h3>Deposit Chips</h3>
+<small>View Status</small>
+
+<label>Amount (PTS)</label>
+<select>
+  <option value="50">50 PTS</option>
+  <option value="100">100 PTS</option>
+  <option value="300">300 PTS</option>
+  <option value="500">500 PTS</option>
+  <option value="1000">1000 PTS</option>
+  <option value="2000">2000 PTS</option>
+  <option value="3000">3000 PTS</option>
+  <option value="5000">5000 PTS</option>
+</select>
+
+<label>Wallet (Send To)</label>
+<select id="walletType" onchange="updateWalletNumber()">
+  <option value="jazzcash">JazzCash</option>
+  <option value="easypaisa">EasyPaisa</option>
+</select>
+
+<label>Company Wallet Number</label>
+<div style="display:flex;gap:8px;">
+  <input id="walletNumber" readonly>
+  <button type="button" class="copy-btn" onclick="copyWallet()">Copy</button>
+</div>
+
+<label>Wallet Owner Name (Sent From)</label>
+<input placeholder="Enter wallet owner name">
+
+<label>Your Wallet Number (Sent From)</label>
+<input placeholder="03XXXXXXXXX">
+
+<div class="popup-actions">
+<button class="confirm" onclick="submitDeposit()">Confirm Request</button>
+<button class="cancel" onclick="closePopup()">Cancel</button>
+</div>`;
+}
+window.updateWalletNumber = () => {
+  const type = document.getElementById("walletType").value;
+  const input = document.getElementById("walletNumber");
+
+  if (type === "jazzcash") {
+    input.value = "03090447488";
+  } else {
+    input.value = "03008775258";
+  }
+};
+
+window.openWithdraw=()=>{
+popup.style.display="flex";
+popupContent.innerHTML=`
+<h3>Withdraw Funds</h3>
+<small>View Withdraw Status</small>
+
+<small>Minimum withdrawal: 50 pts</small>
+
+<label>Amount (Min 50 pts)</label>
+<input placeholder="Enter amount">
+
+<label>Withdraw Method</label>
+<select><option>JazzCash</option><option>EasyPaisa</option></select>
+
+<label>Wallet Owner Name</label>
+<input placeholder="Enter your registered name">
+
+<label>Account Number (JazzCash / EasyPaisa)</label>
+<input placeholder="Enter 11 digit account number">
+
+<div class="popup-actions">
+<button class="confirm" onclick="alert('Withdraw request feature coming soon')">
+  Request Withdraw
+</button>
+<button class="cancel" onclick="closePopup()">Cancel</button>
+</div>`;
+}
+window.submitDeposit = async ()=>{
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const amount = popupContent.querySelector("select").value;
+  const walletType = document.getElementById("walletType").value;
+
+  const depositsRef = collection(db, "users", user.uid, "deposits");
+
+  // ⏱️ 24 hours ago
+  const since = new Date();
+  since.setHours(since.getHours() - 24);
+
+  // 🔎 check last 24h deposits
+  const q = query(
+    depositsRef,
+    where("createdAt", ">=", since.toISOString())
+  );
+
+  const snap = await getDocs(q);
+
+  if (snap.size >= 2) {
+    alert("You can send only 2 deposit requests in 24 hours");
+    return;
+  }
+
+  // ✅ save request
+  await addDoc(depositsRef, {
+    amount: Number(amount),
+    walletType,
+    status: "pending",
+    createdAt: new Date().toISOString()
+  });
+
+  alert("Deposit request sent successfully");
+  closePopup();
+};
+
+window.closePopup=()=>popup.style.display="none";
+// REFER POPUP
+window.openRefer = ()=>{
+  referPopup.style.display="flex";
+
+  const uid = document.getElementById("userId").innerText;
+  const link = `https://powermax.com/?ref=${uid}`;
+
+  document.getElementById("refLink").value = link;
+};
+
+window.closeRefer = ()=>{
+  referPopup.style.display="none";
+};
+
+window.copyRef = ()=>{
+  const input = document.getElementById("refLink");
+  input.select();
+  document.execCommand("copy");
+  alert("Referral link copied");
+};
+window.copyWallet = ()=>{
+  const input = document.getElementById("walletNumber");
+  input.select();
+  document.execCommand("copy");
+  alert("Wallet number copied");
+};
+async function loadDirectTeam() {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const userSnap = await getDoc(doc(db, "users", user.uid));
+  if (!userSnap.exists()) return;
+
+  const myRefCode = userSnap.data().refCode;
+
+  const q = query(
+    collection(db, "users"),
+    where("referredBy", "==", myRefCode)
+  );
+
+  const qsnap = await getDocs(q);
+
+  document.getElementById("lvl1count").innerText = qsnap.size;
+
+  const box = document.querySelector(".level1 .empty");
+  if (qsnap.empty) {
+    box.innerText = "No members yet.";
+    return;
+  }
+
+  box.innerHTML = "";
+
+  qsnap.forEach(docu => {
+    const d = docu.data();
+    box.innerHTML += `
+      <div style="margin-top:6px;">
+        ${d.email}
+      </div>
+    `;
+  });
+}
+</script>
+
+</body>
+</html>
