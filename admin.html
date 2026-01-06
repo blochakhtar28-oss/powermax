@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Panel</title>
+</head>
+<body>
+
+<h2>ADMIN PANEL (PRIVATE)</h2>
+<p>Only website owner can access</p>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCzHxyLgn9ZKRwD1X0RuUSq3od6MWizieg",
+  authDomain: "powermax-fe149.firebaseapp.com",
+  projectId: "powermax-fe149"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// 🔒 ADMIN CHECK FUNCTION
+async function isAdmin(uid) {
+  const adminRef = doc(db, "admins", uid);
+  const snap = await getDoc(adminRef);
+  return snap.exists() && snap.data().role === "admin";
+}
+
+// 🔐 PROTECT ADMIN PANEL
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    location.href = "index.html";
+    return;
+  }
+
+  const admin = await isAdmin(user.uid);
+
+  if (!admin) {
+    alert("Access denied");
+    location.href = "dashboard.html";
+    return;
+  }
+
+  console.log("✅ ADMIN ACCESS GRANTED:", user.email);
+});
+
+</script>
+
+</body>
+</html>
