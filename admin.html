@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -66,11 +66,13 @@ button{
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
-  getAuth,
-  onAuthStateChanged,
-  GoogleAuthProvider,
-  signInWithPopup
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  getFirestore,
+  doc,
+  getDoc,
+  updateDoc,
+  collection,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
   getFirestore,
@@ -113,6 +115,7 @@ onAuthStateChanged(auth, async(user)=>{
   }
 
   loadGlobalSettings();
+  loadWithdrawRequests();
 });
 
 /* ⚙️ LOAD SETTINGS + PLANS */
@@ -170,7 +173,34 @@ window.savePlan = async (key)=>{
 
   alert(key+" updated successfully");
 };
+async function loadWithdrawRequests(){
+  const box = document.getElementById("withdrawList");
+  box.innerHTML = "Loading...";
+
+  const snap = await getDocs(collection(db,"withdrawRequests"));
+
+  if(snap.empty){
+    box.innerHTML = "No withdrawal requests";
+    return;
+  }
+
+  box.innerHTML = "";
+
+  snap.forEach(d=>{
+    const w = d.data();
+
+    box.innerHTML += `
+      <div style="margin-bottom:8px;">
+        <b>${w.email}</b><br>
+        Amount: ${w.amount}<br>
+        Status: ${w.status}
+      </div>
+      <hr>
+    `;
+  });
+}
+loadWithdrawRequests();
 </script>
 
 </body>
-</html>
+  </html>
