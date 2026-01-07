@@ -22,48 +22,67 @@
     button{
       padding:8px 14px;
       margin-right:6px;
-      cursor:pointer
+      cursor:pointer;
+      border:none;
+      border-radius:6px;
     }
-    .approve{background:#2ecc71;color:#fff;border:none}
-    .reject{background:#e74c3c;color:#fff;border:none}
+    .approve{background:#2ecc71;color:#fff}
+    .reject{background:#e74c3c;color:#fff}
   </style>
 </head>
 
 <body>
 
-<h2>🔐 PowerMax Admin Panel</h2>
-<p>Only website owner can access</p>
-
-<div class="box">
-  <h3>Deposit Requests</h3>
-  <div id="depositList">Loading...</div>
+<!-- 🔐 LOGIN BOX -->
+<div id="loginBox" style="text-align:center;margin-top:60px;">
+  <h2>🔐 Admin Login</h2>
+  <button id="loginBtn" style="
+    padding:12px 24px;
+    font-size:16px;
+    background:#0a66ff;
+    color:#fff;
+  ">
+    Login with Google
+  </button>
 </div>
 
-<div class="box">
-  <h3>Withdraw Requests</h3>
-  <div id="withdrawList">Loading...</div>
-</div>
+<!-- 🛠️ ADMIN PANEL -->
+<div id="adminApp" style="display:none;">
 
-<div class="box">
-  <h3>Global Settings</h3>
-  <div id="settingsBox">Loading...</div>
+  <h2>⚙️ PowerMax Admin Panel</h2>
+  <p>Only website owner can access</p>
+
+  <div class="box">
+    <h3>💰 Deposit Requests</h3>
+    <div id="depositList">Loading...</div>
+  </div>
+
+  <div class="box">
+    <h3>💸 Withdraw Requests</h3>
+    <div id="withdrawList">Loading...</div>
+  </div>
+
+  <div class="box">
+    <h3>🌍 Global Settings</h3>
+    <div id="settingsBox">Loading...</div>
+  </div>
+
 </div>
 
 <script type="module">
 /* 🔥 FIREBASE IMPORTS */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { 
+import {
   getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
   getFirestore,
   doc,
-  getDoc,
-  collection,
-  getDocs,
-  updateDoc
+  getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 /* 🔥 FIREBASE CONFIG */
@@ -76,6 +95,12 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+
+/* 🔐 ELEMENTS */
+const loginBox = document.getElementById("loginBox");
+const adminApp = document.getElementById("adminApp");
+const loginBtn = document.getElementById("loginBtn");
 
 /* 🔒 ADMIN CHECK */
 async function isAdmin(uid){
@@ -84,10 +109,21 @@ async function isAdmin(uid){
   return snap.exists() && snap.data().role === "admin";
 }
 
-/* 🔐 PROTECT ADMIN PANEL */
+/* 🔑 LOGIN CLICK */
+loginBtn.onclick = async () => {
+  try{
+    await signInWithPopup(auth, provider);
+  }catch(e){
+    alert("Login failed");
+    console.error(e);
+  }
+};
+
+/* 🔐 AUTH STATE */
 onAuthStateChanged(auth, async(user)=>{
   if(!user){
-    location.href="index.html";
+    loginBox.style.display = "block";
+    adminApp.style.display = "none";
     return;
   }
 
@@ -95,15 +131,18 @@ onAuthStateChanged(auth, async(user)=>{
 
   if(!admin){
     alert("Access Denied");
-    location.href="dashboard.html";
+    auth.signOut();
     return;
   }
 
+  // ✅ ADMIN LOGGED IN
+  loginBox.style.display = "none";
+  adminApp.style.display = "block";
+
   console.log("✅ ADMIN LOGGED IN:", user.email);
 
-  // NEXT STEPS YAHAN AAYENGE
+  // 👉 NEXT: load deposits / withdraws / settings
 });
-
 </script>
 
 </body>
