@@ -1,206 +1,164 @@
- <!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-<meta charset="UTF-8">
-<title>⚡ PowerMax Admin Panel</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-body{
-  font-family:Arial,sans-serif;
-  background:#f4f6f8;
-  padding:20px
-}
-h2{margin-bottom:6px}
-.box{
-  background:#fff;
-  padding:16px;
-  border-radius:10px;
-  margin-bottom:20px;
-  box-shadow:0 2px 8px rgba(0,0,0,.08)
-}
-.plan{
-  display:flex;
-  gap:8px;
-  align-items:center;
-  margin-bottom:8px;
-  flex-wrap:wrap
-}
-input{
-  padding:6px;
-  width:90px
-}
-button{
-  padding:6px 12px;
-  cursor:pointer
-}
-.save{background:#2ecc71;color:#fff;border:none}
-</style>
+  <meta charset="UTF-8">
+  <title>PowerMax Admin Panel</title>
+  <style>
+    body { font-family: Arial; background:#111; color:#fff; padding:20px }
+    button { padding:6px 12px; margin:4px; cursor:pointer }
+    .box { border:1px solid #333; padding:10px; margin-bottom:10px }
+  </style>
 </head>
-
 <body>
 
-<h2>⚡ PowerMax Admin Panel</h2>
-<p>Only website owner can access</p>
+<h2>🔐 Admin Panel</h2>
+<button onclick="login()">Sign in with Google</button>
+<button onclick="logout()">Logout</button>
 
-<div class="box">
-  <h3>📥 Deposit Requests</h3>
-  <div id="depositList">Loading...</div>
-</div>
+<hr>
 
-<div class="box">
-  <h3>📤 Withdraw Requests</h3>
-  <div id="withdrawList">Loading...</div>
-</div>
+<h3>💰 Deposit Requests</h3>
+<div id="depositList">Loading...</div>
 
-<div class="box">
-  <h3>⚙️ Global Settings</h3>
-  <div id="settingsBox">Loading...</div>
-</div>
+<hr>
 
-<div class="box">
-  <h3>📦 Plans & Commission Manager</h3>
-  <div id="plansBox">Loading...</div>
-</div>
+<h3>🏧 Withdraw Requests</h3>
+<div id="withdrawList">Loading...</div>
 
+<!-- Firebase -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
-  getFirestore,
-  doc,
-  getDoc,
-  updateDoc,
-  collection,
-  getDocs
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
+  getFirestore, collection, getDocs, doc,
+  getDoc, updateDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import {
-  getFirestore,
-  doc,
-  getDoc,
-  updateDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  getAuth, GoogleAuthProvider,
+  signInWithPopup, signOut
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-/* 🔥 FIREBASE CONFIG */
 const firebaseConfig = {
-  apiKey: "AIzaSyCzHxyLgn9ZKRwD1X0RuUSq3od6MWizieg",
-  authDomain: "powermax-fe149.firebaseapp.com",
-  projectId: "powermax-fe149"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 const db = getFirestore(app);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
 
-/* 🔒 ADMIN CHECK */
-async function isAdmin(uid){
-  const ref = doc(db,"admins",uid);
-  const snap = await getDoc(ref);
-  return snap.exists() && snap.data().role === "admin";
-}
+let currentAdmin = null;
 
-/* 🔐 AUTH */
-onAuthStateChanged(auth, async(user)=>{
-  if(!user){
-    const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth,provider);
-    return;
-  }
+/* 🔐 LOGIN */
+window.login = async ()=>{
+  const res = await signInWithPopup(auth, provider);
+  const user = res.user;
 
-  const admin = await isAdmin(user.uid);
-  if(!admin){
-    alert("Access denied");
-    location.href="dashboard.html";
-    return;
-  }
-
-  loadGlobalSettings();
-  loadWithdrawRequests();
-});
-
-/* ⚙️ LOAD SETTINGS + PLANS */
-async function loadGlobalSettings(){
-  const ref = doc(db,"settings","global");
-  const snap = await getDoc(ref);
-
+  const snap = await getDoc(doc(db,"admins",user.uid));
   if(!snap.exists()){
-    alert("Global settings missing");
+    alert("Not admin");
+    await signOut(auth);
     return;
   }
 
-  const data = snap.data();
-
-  document.getElementById("settingsBox").innerHTML = `
-    Min Withdraw: <b>${data.minWithdraw}</b><br>
-    Plan Expiry Days: <b>${data.planExpiryDays}</b>
-  `;
-
-  loadPlans(data.plans);
-}
-
-/* 📦 PLANS MANAGER */
-function loadPlans(plans){
-  const box = document.getElementById("plansBox");
-  box.innerHTML = "";
-
-  Object.keys(plans).forEach(key=>{
-    const p = plans[key];
-
-    box.innerHTML += `
-      <div class="plan">
-        <b>${key}</b>
-        Price:
-        <input id="price_${key}" value="${p.price}">
-        Commission %:
-        <input id="com_${key}" value="${p.commission}">
-        <button class="save" onclick="savePlan('${key}')">Save</button>
-      </div>
-    `;
-  });
-}
-
-/* 💾 SAVE PLAN */
-window.savePlan = async (key)=>{
-  const price = Number(document.getElementById("price_"+key).value);
-  const com = Number(document.getElementById("com_"+key).value);
-
-  const ref = doc(db,"settings","global");
-
-  await updateDoc(ref,{
-    [`plans.${key}.price`]: price,
-    [`plans.${key}.commission`]: com
-  });
-
-  alert(key+" updated successfully");
+  currentAdmin = user;
+  loadDeposits();
+  loadWithdraws();
 };
-async function loadWithdrawRequests(){
-  const box = document.getElementById("withdrawList");
+
+/* 🚪 LOGOUT */
+window.logout = async ()=>{
+  await signOut(auth);
+  location.reload();
+};
+
+/* 💰 LOAD DEPOSITS */
+async function loadDeposits(){
+  const box = document.getElementById("depositList");
   box.innerHTML = "Loading...";
 
-  const snap = await getDocs(collection(db,"withdrawRequests"));
-
-  if(snap.empty){
-    box.innerHTML = "No withdrawal requests";
-    return;
-  }
-
+  const snap = await getDocs(collection(db,"depositRequests"));
   box.innerHTML = "";
 
   snap.forEach(d=>{
     const w = d.data();
+    if(w.status !== "pending") return;
 
     box.innerHTML += `
-      <div style="margin-bottom:8px;">
+      <div class="box">
         <b>${w.email}</b><br>
         Amount: ${w.amount}<br>
-        Status: ${w.status}
+        TRX: ${w.trx}<br>
+        <button onclick="approveDeposit('${d.id}','${w.uid}',${w.amount})">Approve</button>
+        <button onclick="rejectDeposit('${d.id}')">Reject</button>
       </div>
-      <hr>
     `;
   });
 }
-loadWithdrawRequests();
+
+/* ✅ APPROVE DEPOSIT */
+window.approveDeposit = async (id, uid, amount)=>{
+  await updateDoc(doc(db,"depositRequests",id),{
+    status:"approved"
+  });
+
+  const uref = doc(db,"users",uid);
+  const usnap = await getDoc(uref);
+  const bal = usnap.data().balance || 0;
+
+  await updateDoc(uref,{
+    balance: bal + amount
+  });
+
+  loadDeposits();
+};
+
+/* ❌ REJECT DEPOSIT */
+window.rejectDeposit = async (id)=>{
+  await updateDoc(doc(db,"depositRequests",id),{
+    status:"rejected"
+  });
+  loadDeposits();
+};
+
+/* 🏧 LOAD WITHDRAW */
+async function loadWithdraws(){
+  const box = document.getElementById("withdrawList");
+  box.innerHTML = "Loading...";
+
+  const snap = await getDocs(collection(db,"withdrawRequests"));
+  box.innerHTML = "";
+
+  snap.forEach(d=>{
+    const w = d.data();
+    if(w.status !== "pending") return;
+
+    box.innerHTML += `
+      <div class="box">
+        <b>${w.email}</b><br>
+        Amount: ${w.amount}<br>
+        <button onclick="approveWithdraw('${d.id}')">Approve</button>
+        <button onclick="rejectWithdraw('${d.id}')">Reject</button>
+      </div>
+    `;
+  });
+}
+
+window.approveWithdraw = async (id)=>{
+  await updateDoc(doc(db,"withdrawRequests",id),{
+    status:"approved"
+  });
+  loadWithdraws();
+};
+
+window.rejectWithdraw = async (id)=>{
+  await updateDoc(doc(db,"withdrawRequests",id),{
+    status:"rejected"
+  });
+  loadWithdraws();
+};
 </script>
 
 </body>
-  </html>
+ </html>
