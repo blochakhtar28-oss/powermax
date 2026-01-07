@@ -1,19 +1,72 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Admin Panel</title>
+  <meta charset="UTF-8">
+  <title>PowerMax Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body{
+      font-family: Arial, sans-serif;
+      background:#f4f6f8;
+      padding:20px
+    }
+    h2{margin-bottom:10px}
+    .box{
+      background:#fff;
+      padding:16px;
+      border-radius:8px;
+      margin-bottom:20px;
+      box-shadow:0 2px 8px rgba(0,0,0,.08)
+    }
+    button{
+      padding:8px 14px;
+      margin-right:6px;
+      cursor:pointer
+    }
+    .approve{background:#2ecc71;color:#fff;border:none}
+    .reject{background:#e74c3c;color:#fff;border:none}
+  </style>
 </head>
+
 <body>
 
-<h2>ADMIN PANEL (PRIVATE)</h2>
+<h2>🔐 PowerMax Admin Panel</h2>
 <p>Only website owner can access</p>
 
+<div class="box">
+  <h3>Deposit Requests</h3>
+  <div id="depositList">Loading...</div>
+</div>
+
+<div class="box">
+  <h3>Withdraw Requests</h3>
+  <div id="withdrawList">Loading...</div>
+</div>
+
+<div class="box">
+  <h3>Global Settings</h3>
+  <div id="settingsBox">Loading...</div>
+</div>
+
 <script type="module">
-
+/* 🔥 FIREBASE IMPORTS */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { 
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  collection,
+  getDocs,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* 🔥 FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyCzHxyLgn9ZKRwD1X0RuUSq3od6MWizieg",
   authDomain: "powermax-fe149.firebaseapp.com",
@@ -24,29 +77,31 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// 🔒 ADMIN CHECK FUNCTION
-async function isAdmin(uid) {
-  const adminRef = doc(db, "admins", uid);
-  const snap = await getDoc(adminRef);
+/* 🔒 ADMIN CHECK */
+async function isAdmin(uid){
+  const ref = doc(db,"admins",uid);
+  const snap = await getDoc(ref);
   return snap.exists() && snap.data().role === "admin";
 }
 
-// 🔐 PROTECT ADMIN PANEL
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    location.href = "index.html";
+/* 🔐 PROTECT ADMIN PANEL */
+onAuthStateChanged(auth, async(user)=>{
+  if(!user){
+    location.href="index.html";
     return;
   }
 
   const admin = await isAdmin(user.uid);
 
-  if (!admin) {
-    alert("Access denied");
-    location.href = "dashboard.html";
+  if(!admin){
+    alert("Access Denied");
+    location.href="dashboard.html";
     return;
   }
 
-  console.log("✅ ADMIN ACCESS GRANTED:", user.email);
+  console.log("✅ ADMIN LOGGED IN:", user.email);
+
+  // NEXT STEPS YAHAN AAYENGE
 });
 
 </script>
