@@ -1,91 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>PowerMax Admin Panel</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>PowerMax Admin Panel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    body{
-      font-family: Arial, sans-serif;
-      background:#f4f6f8;
-      padding:20px
-    }
-    h2{margin-bottom:10px}
-    .box{
-      background:#fff;
-      padding:16px;
-      border-radius:8px;
-      margin-bottom:20px;
-      box-shadow:0 2px 8px rgba(0,0,0,.08)
-    }
-    button{
-      padding:8px 14px;
-      margin-right:6px;
-      cursor:pointer;
-      border:none;
-      border-radius:6px;
-    }
-    .approve{background:#2ecc71;color:#fff}
-    .reject{background:#e74c3c;color:#fff}
-  </style>
+<style>
+body{font-family:Arial;background:#f4f6f8;padding:20px}
+.box{background:#fff;padding:16px;border-radius:8px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+button{padding:6px 12px;margin-right:6px;cursor:pointer}
+.approve{background:#2ecc71;color:#fff;border:none}
+.reject{background:#e74c3c;color:#fff;border:none}
+</style>
 </head>
 
 <body>
 
-<!-- 🔐 LOGIN BOX -->
-<div id="loginBox" style="text-align:center;margin-top:60px;">
+<div id="loginBox" style="text-align:center;margin-top:40px;">
   <h2>🔐 Admin Login</h2>
-  <button id="loginBtn" style="
-    padding:12px 24px;
-    font-size:16px;
-    background:#0a66ff;
-    color:#fff;
-  ">
-    Login with Google
-  </button>
+  <button id="loginBtn">Login with Google</button>
 </div>
 
-<!-- 🛠️ ADMIN PANEL -->
 <div id="adminApp" style="display:none;">
-
-  <h2>⚙️ PowerMax Admin Panel</h2>
+  <h2>⚡ PowerMax Admin Panel</h2>
   <p>Only website owner can access</p>
 
   <div class="box">
-    <h3>💰 Deposit Requests</h3>
+    <h3>Deposit Requests</h3>
     <div id="depositList">Loading...</div>
   </div>
 
   <div class="box">
-    <h3>💸 Withdraw Requests</h3>
+    <h3>Withdraw Requests</h3>
     <div id="withdrawList">Loading...</div>
   </div>
 
   <div class="box">
-    <h3>🌍 Global Settings</h3>
+    <h3>Global Settings</h3>
     <div id="settingsBox">Loading...</div>
   </div>
-
 </div>
 
 <script type="module">
-/* 🔥 FIREBASE IMPORTS */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getAuth,
+  onAuthStateChanged,
   GoogleAuthProvider,
-  signInWithPopup,
-  onAuthStateChanged
+  signInWithPopup
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
   getFirestore,
   doc,
-  getDoc
+  getDoc,
+  collection,
+  getDocs,
+  updateDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-/* 🔥 FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyCzHxyLgn9ZKRwD1X0RuUSq3od6MWizieg",
   authDomain: "powermax-fe149.firebaseapp.com",
@@ -95,53 +68,75 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const provider = new GoogleAuthProvider();
 
-/* 🔐 ELEMENTS */
-const loginBox = document.getElementById("loginBox");
-const adminApp = document.getElementById("adminApp");
-const loginBtn = document.getElementById("loginBtn");
+/* 🔐 GOOGLE LOGIN */
+const provider = new GoogleAuthProvider();
+loginBtn.onclick = () => signInWithPopup(auth, provider);
 
 /* 🔒 ADMIN CHECK */
 async function isAdmin(uid){
-  const ref = doc(db,"admins",uid);
-  const snap = await getDoc(ref);
+  const snap = await getDoc(doc(db,"admins",uid));
   return snap.exists() && snap.data().role === "admin";
 }
 
-/* 🔑 LOGIN CLICK */
-loginBtn.onclick = async () => {
-  try{
-    await signInWithPopup(auth, provider);
-  }catch(e){
-    alert("Login failed");
-    console.error(e);
+/* 🔽 LOAD DEPOSITS */
+async function loadDeposits(){
+  const snap = await getDocs(collection(db,"depositRequests"));
+  if(snap.empty){
+    depositList.innerHTML = "No deposit requests";
+    return;
   }
-};
+  depositList.innerHTML = "";
+  snap.forEach(d=>{
+    const x=d.data();
+    depositList.innerHTML += `<div>${x.email} — ${x.amount}</div>`;
+  });
+}
+
+/* 🔽 LOAD WITHDRAWS */
+async function loadWithdraws(){
+  const snap = await getDocs(collection(db,"withdrawRequests"));
+  if(snap.empty){
+    withdrawList.innerHTML = "No withdraw requests";
+    return;
+  }
+  withdrawList.innerHTML = "";
+  snap.forEach(d=>{
+    const x=d.data();
+    withdrawList.innerHTML += `<div>${x.email} — ${x.amount}</div>`;
+  });
+}
+
+/* 🔽 LOAD SETTINGS */
+async function loadSettings(){
+  const snap = await getDoc(doc(db,"settings","global"));
+  if(!snap.exists()){
+    settingsBox.innerHTML = "No settings found";
+    return;
+  }
+  const s=snap.data();
+  settingsBox.innerHTML = `
+    Min Withdraw: ${s.minWithdraw}<br>
+    Plan Expiry Days: ${s.planExpiryDays}
+  `;
+}
 
 /* 🔐 AUTH STATE */
 onAuthStateChanged(auth, async(user)=>{
-  if(!user){
-    loginBox.style.display = "block";
-    adminApp.style.display = "none";
-    return;
-  }
+  if(!user) return;
 
   const admin = await isAdmin(user.uid);
-
   if(!admin){
-    alert("Access Denied");
-    auth.signOut();
+    alert("Access denied");
     return;
   }
 
-  // ✅ ADMIN LOGGED IN
-  loginBox.style.display = "none";
-  adminApp.style.display = "block";
+  loginBox.style.display="none";
+  adminApp.style.display="block";
 
-  console.log("✅ ADMIN LOGGED IN:", user.email);
-
-  // 👉 NEXT: load deposits / withdraws / settings
+  loadDeposits();
+  loadWithdraws();
+  loadSettings();
 });
 </script>
 
