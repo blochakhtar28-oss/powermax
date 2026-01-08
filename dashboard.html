@@ -197,7 +197,30 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+// 🔧 LOAD GLOBAL SETTINGS
+async function loadGlobalSettings() {
+  const ref = doc(db, "settings", "global");
+  const snap = await getDoc(ref);
+
+  if (!snap.exists()) {
+    console.error("❌ Global settings not found");
+    return null;
+  }
+
+  return snap.data();
+}
 const activeBox = document.getElementById("activeBox");
+// 🔒 ADMIN CHECK FUNCTION
+async function isAdmin(uid) {
+  const adminRef = doc(db, "admins", uid);
+  const adminSnap = await getDoc(adminRef);
+
+  if (!adminSnap.exists()) {
+    return false;
+  }
+
+  return adminSnap.data().role === "admin";
+}
 // 🔹 Save user in Firestore
 function generateRefCode() {
   return "PMX" + Math.random().toString(36).substring(2,8).toUpperCase();
@@ -236,6 +259,17 @@ onAuthStateChanged(auth, async (user) => {
 
   // 🔹 pehle ensure user saved ho
   await saveUser(user);
+  // 🔐 ADMIN CHECK (STEP 2)
+const admin = await isAdmin(user.uid);
+
+if (admin) {
+  console.log("✅ Admin logged in:", user.email);
+  // future: admin panel access
+} else {
+  console.log("👤 Normal user:", user.email);
+}
+// 🔒 Global admin flag
+window.IS_ADMIN = admin;
 
   // 🔹 ab Firestore se real data load
   const userRef = doc(db, "users", user.uid);
@@ -261,6 +295,14 @@ onAuthStateChanged(auth, async (user) => {
       <b>Activated:</b><br>${new Date(p.activatedAt).toLocaleString()}<br><br>
       <b>Expiry:</b><br>${new Date(p.expiryAt).toLocaleString()}
     `;
+    // 🔒 Keep active plan button GREEN permanently until expiry
+    document.querySelectorAll(".plan").forEach(planDiv => {
+      if (planDiv.innerText.includes(p.planName)) {
+        const btn = planDiv.querySelector("button");
+        btn.classList.remove("btn-active");
+        btn.classList.add("btn-on");
+      }
+    });
   }
   }
 });
@@ -315,7 +357,11 @@ window.activatePlan = async (planName, commission, btn) => {
 
   const start = new Date();
   const expiry = new Date();
-  expiry.setDate(start.getDate() + 30);
+  // 🔧 get expiry days from admin settings
+const settings = await loadGlobalSettings();
+const days = settings.planExpiryDays || 30;
+
+expiry.setDate(start.getDate() + days);
   // 🔒 LOW BALANCE CHECK
 const plantPts = parseInt(planName.split(" ")[0]);
 
@@ -391,7 +437,7 @@ if (userSnap.exists()) {
   });
 
   btn.className = "btn-on";
-  btn.innerText = "Active";
+  btn.innerText = "Activated";
 
   activeBox.style.display = "block";
   activeBox.innerHTML = `
@@ -444,6 +490,8 @@ popupContent.innerHTML=`
 <button class="cancel" onclick="closePopup()">Cancel</button>
 </div>`;
 }
+updateWalletNumber();
+
 window.updateWalletNumber = () => {
   const type = document.getElementById("walletType").value;
   const input = document.getElementById("walletNumber");
@@ -476,14 +524,14 @@ popupContent.innerHTML=`
 <input placeholder="Enter 11 digit account number">
 
 <div class="popup-actions">
-<button class="confirm" onclick="alert('Withdraw request feature coming soon')">
+<button class="confirm" onclick="submitWithdraw()">
   Request Withdraw
 </button>
 <button class="cancel" onclick="closePopup()">Cancel</button>
 </div>`;
 }
-window.submitDeposit = async ()=>{
-  const user = auth.currentUser;
+window.submitDeposit = async ()=>{  
+  const user = auth.currentUser;  
   if (!user) return;
 
   const amount = popupContent.querySelector("select").value;
@@ -519,6 +567,79 @@ window.submitDeposit = async ()=>{
   alert("Deposit request sent successfully");
   closePopup();
 };
+window.submitWithdraw = async ()=>{
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const amount = Number(
+    document.querySelector("#popupContent input").value
+  );
+
+  const method =
+    document.querySelector("#popupContent select").value;
+
+  // 🔧 LOAD MIN WITHDRAW FROM GLOBAL SETTINGS
+const settings = await loadGlobalSettings();
+
+if (!settings || !settings.minWithdraw) {
+  alert("Withdraw settings not configured");
+  return;
+}
+
+const MIN_WITHDRAW = settings.minWithdraw;
+
+if (amount < MIN_WITHDRAW) {
+  alert(`Minimum withdrawal is ${MIN_WITHDRAW} PTS`);
+  return;
+}
+
+  const userRef = doc(db, "users", user.uid);
+  const userSnap = await getDoc(userRef);
+
+  if (!userSnap.exists()) return;
+
+  const balance = userSnap.data().balance || 0;
+
+  if (balance < amount) {
+    alert("Low balance");
+    return;
+  }
+
+  // ⏱️ last 24 hours (GLOBAL withdrawRequests)
+const since = new Date();
+since.setHours(since.getHours() - 24);
+
+const q = query(
+  collection(db, "withdrawRequests"),
+  where("uid", "==", user.uid),
+  where("createdAt", ">=", since)
+);
+
+const snap = await getDocs(q);
+
+if (snap.size >= 2) {
+  alert("Only 2 withdrawals allowed in 24 hours");
+  return;
+}
+
+// 💸 cut balance
+await updateDoc(userRef, {
+  balance: increment(-amount)
+});
+
+// 📥 save GLOBAL withdraw request (ADMIN CONTROL)
+await addDoc(collection(db, "withdrawRequests"), {
+  uid: user.uid,
+  email: user.email,
+  amount: amount,
+  method: method,
+  status: "pending",
+  createdAt: serverTimestamp()
+});
+
+  alert("Withdrawal request sent successfully");
+  closePopup();
+};
 
 window.closePopup=()=>popup.style.display="none";
 // REFER POPUP
@@ -526,7 +647,7 @@ window.openRefer = ()=>{
   referPopup.style.display="flex";
 
   const uid = document.getElementById("userId").innerText;
-  const link = `https://powermax.com/?ref=${uid}`;
+  const link = `https://blochakhtar28-oss.github.io/powermax/?ref=${uid}`;
 
   document.getElementById("refLink").value = link;
 };
