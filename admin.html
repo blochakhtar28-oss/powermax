@@ -96,67 +96,45 @@ async function loadDeposits(){
     `;
   });
 }
+  window.approveDeposit = async (requestId, userId, amount)=>{
+  if(!confirm("Approve this deposit?")) return;
 
-/* ✅ APPROVE DEPOSIT */
-window.approveDeposit = async (id, uid, amount)=>{
-  await updateDoc(doc(db,"depositRequests",id),{
-    status:"approved"
-  });
+  try{
+    await runTransaction(db, async(transaction)=>{
 
-  const uref = doc(db,"users",uid);
-  const usnap = await getDoc(uref);
-  const bal = usnap.data().balance || 0;
+      const userRef = doc(db,"users",userId);
+      const depositRef = doc(db,"depositRequests",requestId);
 
-  await updateDoc(uref,{
-    balance: bal + amount
-  });
+      const userSnap = await transaction.get(userRef);
+      const depositSnap = await transaction.get(depositRef);
 
-  loadDeposits();
-};
+      if(!userSnap.exists()) throw "User not found";
+      if(!depositSnap.exists()) throw "Deposit not found";
 
-/* ❌ REJECT DEPOSIT */
-window.rejectDeposit = async (id)=>{
-  await updateDoc(doc(db,"depositRequests",id),{
-    status:"rejected"
-  });
-  loadDeposits();
-};
+      if(depositSnap.data().status !== "pending"){
+        throw "Already processed";
+      }
 
-/* 🏧 LOAD WITHDRAW */
-async function loadWithdraws(){
-  const box = document.getElementById("withdrawList");
-  box.innerHTML = "Loading...";
+      const oldBalance = userSnap.data().balance || 0;
 
-  const snap = await getDocs(collection(db,"withdrawRequests"));
-  box.innerHTML = "";
+      // ➕ Add balance
+      transaction.update(userRef,{
+        balance: oldBalance + amount
+      });
 
-  snap.forEach(d=>{
-    const w = d.data();
-    if(w.status !== "pending") return;
+      // ✅ Approve deposit
+      transaction.update(depositRef,{
+        status: "approved",
+        approvedAt: new Date()
+      });
+    });
 
-    box.innerHTML += `
-      <div class="box">
-        <b>${w.email}</b><br>
-        Amount: ${w.amount}<br>
-        <button onclick="approveWithdraw('${d.id}')">Approve</button>
-        <button onclick="rejectWithdraw('${d.id}')">Reject</button>
-      </div>
-    `;
-  });
-}
+    alert("Deposit approved successfully");
+    loadDeposits();
 
-window.approveWithdraw = async (id)=>{
-  await updateDoc(doc(db,"withdrawRequests",id),{
-    status:"approved"
-  });
-  loadWithdraws();
-};
-
-window.rejectWithdraw = async (id)=>{
-  await updateDoc(doc(db,"withdrawRequests",id),{
-    status:"rejected"
-  });
-  loadWithdraws();
+  }catch(err){
+    alert("Error: " + err);
+  }
 };
 </script>
 
