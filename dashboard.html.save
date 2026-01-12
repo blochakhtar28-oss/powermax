@@ -1,4 +1,4 @@
-kkkkkkkkkkkk<select id="walletType" onchange="updateWalletNumber()">
+<select id="walletType" onchange="updateWalletNumber()">
   <option value="jazzcash">JazzCash</option>
   <option value="easypaisa">EasyPaisa</option>
 </select>
