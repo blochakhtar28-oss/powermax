@@ -20,49 +20,45 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
 .btn-active{background:#e8eef6}
 .btn-on{background:#00c853;color:#fff}
 
-.p50 { 
-  background: linear-gradient(135deg, #16a34a, #22c55e);  /* Green */
-  color: #e6f9e6;                                        /* Light green text */
+.p50 div, .p50 div small { color: #e6f4ea; }      /* Text on Green background */
+.p100 div, .p100 div small { color: #fff9db; }    /* Text on Yellow background */
+.p300 div, .p300 div small { color: #e9d7ff; }    /* Text on Purple background */
+.p500 div, .p500 div small { color: #d0f0ff; }    /* Text on Blue background */
+.p1000 div, .p1000 div small { color: #e3d7ff; }  /* Text on Lavender background */
+.p2000 div, .p2000 div small { color: #ffd6e0; }  /* Text on Pink background */
+.p3000 div, .p3000 div small { color: #c3f4f0; }  /* Text on Mint background */
+.p5000 div, .p5000 div small { color: #d9dce2; }  /* Text on Gray background */
+/* ===== HISTORY / REFER COMMON POPUP UI ===== */
+.history-box{
+  background:#fff;
+  width:90%;
+  max-width:360px;
+  border-radius:18px;
+  padding:16px;
 }
-
-.p100 { 
-  background: linear-gradient(135deg, #ca8a04, #facc15); /* Yellow */
-  color: #1a1a1a;                                        /* Dark text for readability */
+.history-box h3{
+  text-align:center;
+  color:#0a66ff;
+  margin-bottom:8px;
 }
-
-.p300 { 
-  background: linear-gradient(135deg, #7c3aed, #a855f7); /* Purple */
-  color: #ffffff;                                        /* White text */
+.history-item{
+  background:#f1f5f9;
+  border-radius:12px;
+  padding:10px;
+  font-size:13px;
+  margin-bottom:8px;
 }
-
-.p500 { 
-  background: linear-gradient(135deg, #0284c7, #38bdf8); /* Blue */
-  color: #ffffff;                                        /* White text */
-}
-
-.p1000 { 
-  background: linear-gradient(135deg, #6d28d9, #c084fc); /* Lavender */
-  color: #ffffff;                                        /* White text */
-}
-
-.p2000 { 
-  background: linear-gradient(135deg, #be185d, #f472b6); /* Pink */
-  color: #ffffff;                                        /* White text */
-}
-
-.p3000 { 
-  background: linear-gradient(135deg, #0f766e, #2dd4bf); /* Mint */
-  color: #ffffff;                                        /* White text */
-}
-
-.p5000 { 
-  background: linear-gradient(135deg, #334155, #64748b); /* Gray */
-  color: #ffffff;                                        /* White text */
-}
-
-/* Ensure small tag (Commission) inherits the same text color */
-.plan small {
-  color: inherit;
+.history-status-pending{color:#ca8a04;font-weight:700}
+.history-status-approved{color:#16a34a;font-weight:700}
+.history-status-cancel{color:#dc2626;font-weight:700}
+.close-btn{
+  margin-top:10px;
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:22px;
+  background:#eee;
+  font-weight:600;
 }
 
 .active-box{display:none;background:#fff;border-radius:14px;padding:14px;margin-top:14px;box-shadow:0 6px 16px rgba(0,0,0,.08);font-size:14px}
@@ -122,7 +118,38 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
 </button>
 </div>
 
+<button class="btn teal-btn full" id="openHistory">History</button>
 <button class="logout" onclick="logout()">Logout</button>
+<!-- ===== HISTORY POPUP ===== -->
+<div id="historyPopup" class="popup">
+  <div class="history-box">
+
+    <h3>📜 Transaction History</h3>
+
+    <div class="history-item">
+      <b>Deposit:</b> 500 PTS<br>
+      <span class="history-status-approved">Approved</span><br>
+      <small>02 Jan 2026, 04:20 PM</small>
+    </div>
+
+    <div class="history-item">
+      <b>Withdraw:</b> 300 PTS<br>
+      <span class="history-status-pending">Pending</span><br>
+      <small>01 Jan 2026, 01:10 PM</small>
+    </div>
+
+    <div class="history-item">
+      <b>Withdraw:</b> 200 PTS<br>
+      <span class="history-status-cancel">Canceled</span><br>
+      <small>31 Dec 2025, 09:45 PM</small>
+    </div>
+
+    <button class="close-btn" onclick="document.getElementById('historyPopup').style.display='none'">
+      Close
+    </button>
+
+  </div>
+</div>
 </div>
 <script type="module">
 
@@ -295,6 +322,11 @@ My Query is: `;
   window.open(url, "_blank");
 };
 window.logout=()=>signOut(auth).then(()=>location.href="index.html");
+document.getElementById("openHistory").onclick = () =>
+  document.getElementById("historyPopup").style.display = "flex";
+  window.openRefer = () => {
+  alert("Refer & Earn popup will open here!");
+};
 window.activatePlan = async (planName, commission, btn) => {
   const user = auth.currentUser;
   if (!user) {
@@ -411,4 +443,4 @@ if (userSnap.exists()) {
 </script>
 
 </body>
-</html>
+        </html>
