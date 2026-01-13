@@ -88,11 +88,6 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
 
 <button class="logout" onclick="logout()">Logout</button>
 </div>
-
-<!-- POPUP -->
-<div class="popup" id="popup">
-  <div class="popup-box" id="popupContent"></div>
-</div>
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -377,59 +372,6 @@ if (userSnap.exists()) {
   `;
 };
 
-window.openDeposit=()=>{
-popup.style.display="flex";
-popupContent.innerHTML=`
-<h3>Deposit Chips</h3>
-<small>View Status</small>
-
-<label>Amount (PTS)</label>
-<select>
-  <option value="50">50 PTS</option>
-  <option value="100">100 PTS</option>
-  <option value="300">300 PTS</option>
-  <option value="500">500 PTS</option>
-  <option value="1000">1000 PTS</option>
-  <option value="2000">2000 PTS</option>
-  <option value="3000">3000 PTS</option>
-  <option value="5000">5000 PTS</option>
-</select>
-
-<label>Wallet (Send To)</label>
-<select id="walletType" onchange="updateWalletNumber()">
-  <option value="jazzcash">JazzCash</option>
-  <option value="easypaisa">EasyPaisa</option>
-</select>
-
-<label>Company Wallet Number</label>
-<div style="display:flex;gap:8px;">
-  <input id="walletNumber" readonly>
-  <button type="button" class="copy-btn" onclick="copyWallet()">Copy</button>
-</div>
-
-<label>Wallet Owner Name (Sent From)</label>
-<input placeholder="Enter wallet owner name">
-
-<label>Your Wallet Number (Sent From)</label>
-<input placeholder="03XXXXXXXXX">
-
-<div class="popup-actions">
-<button class="confirm" onclick="submitDeposit()">Confirm Request</button>
-<button class="cancel" onclick="closePopup()">Cancel</button>
-</div>`;
-}
-updateWalletNumber();
-
-window.updateWalletNumber = () => {
-  const type = document.getElementById("walletType").value;
-  const input = document.getElementById("walletNumber");
-
-  if (type === "jazzcash") {
-    input.value = "03090447488";
-  } else {
-    input.value = "03008775258";
-  }
-};
 
 window.openWithdraw=()=>{
 popup.style.display="flex";
@@ -458,43 +400,6 @@ popupContent.innerHTML=`
 <button class="cancel" onclick="closePopup()">Cancel</button>
 </div>`;
 }
-window.submitDeposit = async ()=>{  
-  const user = auth.currentUser;  
-  if (!user) return;
-
-  const amount = popupContent.querySelector("select").value;
-  const walletType = document.getElementById("walletType").value;
-
-  const depositsRef = collection(db, "users", user.uid, "deposits");
-
-  // ⏱️ 24 hours ago
-  const since = new Date();
-  since.setHours(since.getHours() - 24);
-
-  // 🔎 check last 24h deposits
-  const q = query(
-    depositsRef,
-    where("createdAt", ">=", since.toISOString())
-  );
-
-  const snap = await getDocs(q);
-
-  if (snap.size >= 2) {
-    alert("You can send only 2 deposit requests in 24 hours");
-    return;
-  }
-
-  // ✅ save request
-  await addDoc(depositsRef, {
-    amount: Number(amount),
-    walletType,
-    status: "pending",
-    createdAt: new Date().toISOString()
-  });
-
-  alert("Deposit request sent successfully");
-  closePopup();
-};
 window.submitWithdraw = async ()=>{
   const user = auth.currentUser;
   if (!user) return;
@@ -569,13 +474,6 @@ await addDoc(collection(db, "withdrawRequests"), {
   closePopup();
 };
 
-window.closePopup=()=>popup.style.display="none";
-window.copyWallet = ()=>{
-  const input = document.getElementById("walletNumber");
-  input.select();
-  document.execCommand("copy");
-  alert("Wallet number copied");
-};
 </script>
 
 </body>
