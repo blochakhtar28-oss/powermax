@@ -139,6 +139,84 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
   background:#fff;
   font-weight:700;
 }
+/* ===== DEPOSIT MODAL ===== */
+.dep-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.6);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+}
+
+.dep-box{
+  background:#ffffff;
+  width:92%;
+  max-width:380px;
+  border-radius:18px;
+  padding:20px;
+  color:#020617;
+}
+
+.dep-title{
+  font-size:18px;
+  font-weight:800;
+  color:#2563eb;
+  margin-bottom:10px;
+}
+
+.dep-field{
+  margin-bottom:12px;
+}
+
+.dep-field label{
+  font-size:13px;
+  font-weight:700;
+}
+
+.dep-field select,
+.dep-field input{
+  width:100%;
+  padding:10px;
+  border-radius:12px;
+  border:1px solid #cbd5f5;
+  margin-top:6px;
+}
+
+.wallet-row{
+  display:flex;
+  gap:8px;
+}
+
+.wallet-row input{
+  flex:1;
+}
+
+.dep-actions{
+  display:flex;
+  gap:10px;
+  margin-top:14px;
+}
+
+.confirm-btn{
+  flex:1;
+  background:linear-gradient(135deg,#ef4444,#f97316);
+  border:none;
+  color:#fff;
+  padding:12px;
+  border-radius:14px;
+  font-weight:800;
+}
+
+.cancel-btn{
+  flex:1;
+  background:#fff;
+  border:2px solid #64748b;
+  padding:12px;
+  border-radius:14px;
+  font-weight:800;
+}
 </style>
 </head>
 
@@ -229,6 +307,59 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
 
   </div>
 </div>
+</div>
+<!-- ===== DEPOSIT POPUP ===== -->
+<div id="depositModal" class="dep-modal">
+  <div class="dep-box">
+
+    <h3 class="dep-title">💰 Deposit Chips</h3>
+
+    <div class="dep-field">
+      <label>Amount (PTS)</label>
+      <select>
+        <option>50 PTS</option>
+        <option>100 PTS</option>
+        <option>300 PTS</option>
+        <option>500 PTS</option>
+        <option>1000 PTS</option>
+        <option>2000 PTS</option>
+        <option>3000 PTS</option>
+        <option>5000 PTS</option>
+      </select>
+    </div>
+
+    <div class="dep-field">
+      <label>Wallet (Send To)</label>
+      <select id="walletSelect">
+        <option value="jazz">JazzCash</option>
+        <option value="easy">Easypaisa</option>
+      </select>
+    </div>
+
+    <div class="dep-field">
+      <label>Wallet Number (Send To)</label>
+      <div class="wallet-row">
+        <input id="walletNumber" type="text" value="03090447488" readonly>
+        <button class="copy-btn" onclick="copyDepositNumber()">Copy</button>
+      </div>
+    </div>
+
+    <div class="dep-field">
+      <label>Wallet Owner Name (Sent From)</label>
+      <input type="text" placeholder="Enter wallet owner name">
+    </div>
+
+    <div class="dep-field">
+      <label>Your Wallet Number (Sent From)</label>
+      <input type="text" placeholder="Enter your wallet number">
+    </div>
+
+    <div class="dep-actions">
+      <button class="confirm-btn">Confirm Request</button>
+      <button id="closeDeposit" class="cancel-btn">Cancel</button>
+    </div>
+
+  </div>
 </div>
 <script type="module">
 
@@ -403,6 +534,33 @@ My Query is: `;
 document.getElementById("openHistory").onclick = () => {
   document.getElementById("historyPopup").style.display = "flex";
 };
+/* OPEN DEPOSIT */
+document.getElementById("openDeposit").onclick = function () {
+  document.getElementById("depositModal").style.display = "flex";
+};
+
+/* CLOSE DEPOSIT */
+document.getElementById("closeDeposit").onclick = function () {
+  document.getElementById("depositModal").style.display = "none";
+};
+
+/* AUTO CHANGE NUMBER */
+document.getElementById("walletSelect").onchange = function () {
+  const num = document.getElementById("walletNumber");
+  if(this.value === "jazz"){
+    num.value = "03090447488";
+  }else{
+    num.value = "03008775258";
+  }
+};
+
+/* COPY NUMBER */
+function copyDepositNumber(){
+  const input = document.getElementById("walletNumber");
+  input.select();
+  input.setSelectionRange(0,99999);
+  navigator.clipboard.writeText(input.value);
+}
 window.activatePlan = async (planName, commission, btn) => {
   const user = auth.currentUser;
   if (!user) {
@@ -538,4 +696,4 @@ document.getElementById("copyReferral").onclick = function () {
 </script>
 
 </body>
-                                       </html>
+</html>
