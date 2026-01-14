@@ -83,6 +83,62 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
 .popup-actions{display:flex;gap:10px;margin-top:16px}
 .confirm{flex:1;background:#ff512f;color:#fff;border:none;padding:12px;border-radius:25px}
 .cancel{flex:1;background:#eee;border:none;padding:12px;border-radius:25px}
+/* ===== REFERRAL MODAL ===== */
+.ref-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.6);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+}
+.ref-box{
+  background:#fff;
+  width:92%;
+  max-width:380px;
+  border-radius:18px;
+  padding:20px;
+  color:#020617;
+}
+.ref-title{font-size:18px;font-weight:800;color:#2563eb}
+.ref-sub{font-size:13px;margin:6px 0 12px;color:#475569}
+.ref-label{font-size:13px;font-weight:700}
+.ref-link{display:flex;gap:8px;margin:8px 0 14px}
+.ref-link input{
+  flex:1;
+  padding:8px;
+  border-radius:10px;
+  border:1px solid #cbd5f5;
+}
+.copy-btn{
+  background:#22c55e;
+  border:none;
+  color:#fff;
+  padding:8px 14px;
+  border-radius:10px;
+  font-weight:700;
+}
+.level{margin-top:12px;font-size:14px}
+.l1{color:#16a34a}
+.l2{color:#dc2626}
+.level-box{
+  background:#ecfdf5;
+  border-radius:12px;
+  padding:14px;
+  text-align:center;
+  font-size:13px;
+  margin-top:6px;
+}
+.close-ref{
+  margin-top:16px;
+  width:100%;
+  padding:12px;
+  border-radius:14px;
+  border:2px solid #64748b;
+  background:#fff;
+  font-weight:700;
+}
 </style>
 </head>
 
@@ -118,8 +174,31 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
 </button>
 </div>
 
-<button class="btn teal-btn full" id="openHistory">History</button>
+<button class="logout" id="openHistory">History</button>
 <button class="logout" onclick="logout()">Logout</button>
+<!-- ===== REFERRAL POPUP ===== -->
+<div id="referralModal" class="ref-modal">
+  <div class="ref-box">
+
+    <h3 class="ref-title">👥 Referral Team & Commission</h3>
+    <p class="ref-sub">Share this link to grow your team.</p>
+
+    <label class="ref-label">Your Referral Link</label>
+    <div class="ref-link">
+      <input id="refLinkInput" type="text" value="REF_LINK_HERE" readonly>
+      <button class="copy-btn" id="copyReferral">Copy</button>
+    </div>
+
+    <h4 class="level l1">Level 1 Team</h4>
+    <div class="level-box">No members yet.</div>
+
+    <h4 class="level l2">Level 2 Team (3%)</h4>
+    <div class="level-box">No members yet.</div>
+
+    <button id="closeReferral" class="close-ref">Close</button>
+
+  </div>
+</div>
 <!-- ===== HISTORY POPUP ===== -->
 <div id="historyPopup" class="popup">
   <div class="history-box">
@@ -441,6 +520,25 @@ if (userSnap.exists()) {
 };
 
 </script>
+<script>
+/* OPEN REFER POPUP */
+window.openRefer = () => {
+  document.getElementById("referralModal").style.display = "flex";
+};
+
+/* CLOSE REFER */
+document.getElementById("closeReferral").onclick = () => {
+  document.getElementById("referralModal").style.display = "none";
+};
+
+/* COPY REF LINK */
+document.getElementById("copyReferral").onclick = function () {
+  const input = document.getElementById("refLinkInput");
+  navigator.clipboard.writeText(input.value);
+  this.innerText = "Copied ✓";
+  setTimeout(() => this.innerText = "Copy", 1000);
+};
+</script>
 
 </body>
-        </html>
+    </html>
