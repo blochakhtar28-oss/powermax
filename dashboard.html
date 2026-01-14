@@ -555,12 +555,12 @@ document.getElementById("walletSelect").onchange = function () {
 };
 
 /* COPY NUMBER */
-function copyDepositNumber(){
+window.copyDepositNumber = function () {
   const input = document.getElementById("walletNumber");
   input.select();
-  input.setSelectionRange(0,99999);
+  input.setSelectionRange(0, 99999);
   navigator.clipboard.writeText(input.value);
-}
+};
 window.activatePlan = async (planName, commission, btn) => {
   const user = auth.currentUser;
   if (!user) {
@@ -673,6 +673,15 @@ if (userSnap.exists()) {
         <b>Expiry:</b><br>${expiry.toLocaleString()}
   `;
 };
+window.logout = async function () {
+  try {
+    await signOut(auth);
+    location.href = "index.html";
+  } catch (e) {
+    alert("Logout failed");
+    console.error(e);
+  }
+};
 
 </script>
 <script>
@@ -696,4 +705,4 @@ document.getElementById("copyReferral").onclick = function () {
 </script>
 
 </body>
-</html>
+  </html>
