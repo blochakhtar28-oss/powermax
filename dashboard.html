@@ -403,8 +403,6 @@ My Query is: `;
 window.logout=()=>signOut(auth).then(()=>location.href="index.html");
 document.getElementById("openHistory").onclick = () =>
   document.getElementById("historyPopup").style.display = "flex";
-  window.openRefer = () => {
-  alert("Refer & Earn popup will open here!");
 };
 window.activatePlan = async (planName, commission, btn) => {
   const user = auth.currentUser;
