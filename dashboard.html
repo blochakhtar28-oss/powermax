@@ -399,8 +399,8 @@ My Query is: `;
   const url = "https://wa.me/" + phone + "?text=" + encodeURIComponent(message);
 
   window.open(url, "_blank");
-window.logout=()=>signOut(auth).then(()=>location.href="index.html");
-document.getElementById("openHistory").onclick = () =>
+};
+document.getElementById("openHistory").onclick = () => {
   document.getElementById("historyPopup").style.display = "flex";
 };
 window.activatePlan = async (planName, commission, btn) => {
@@ -538,4 +538,4 @@ document.getElementById("copyReferral").onclick = function () {
 </script>
 
 </body>
-</html>
+                                       </html>
