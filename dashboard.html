@@ -308,6 +308,46 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
   </div>
 </div>
 </div>
+<!-- ===== WITHDRAW POPUP ===== -->
+<div id="withdrawModal" class="dep-modal">
+  <div class="dep-box">
+
+    <h3 class="dep-title">💸 Withdraw Funds</h3>
+
+    <p style="color:red;font-size:13px;font-weight:700;margin-bottom:10px;">
+      Minimum withdrawal: 10 pts
+    </p>
+
+    <div class="dep-field">
+      <label>Amount (Min 10 pts)</label>
+      <input type="number" placeholder="Enter amount">
+    </div>
+
+    <div class="dep-field">
+      <label>Withdraw Method</label>
+      <select>
+        <option>JazzCash</option>
+        <option>EasyPaisa</option>
+      </select>
+    </div>
+
+    <div class="dep-field">
+      <label>Wallet Owner Name</label>
+      <input type="text" placeholder="Enter your registered name">
+    </div>
+
+    <div class="dep-field">
+      <label>Account Number (JazzCash / EasyPaisa)</label>
+      <input type="text" placeholder="Enter 11 digit account number">
+    </div>
+
+    <div class="dep-actions">
+      <button class="confirm-btn">Request Withdraw</button>
+      <button id="closeWithdraw" class="cancel-btn">Cancel</button>
+    </div>
+
+  </div>
+</div>
 <!-- ===== DEPOSIT POPUP ===== -->
 <div id="depositModal" class="dep-modal">
   <div class="dep-box">
@@ -561,6 +601,15 @@ window.copyDepositNumber = function () {
   input.setSelectionRange(0, 99999);
   navigator.clipboard.writeText(input.value);
 };
+/* OPEN WITHDRAW */
+document.querySelector(".orange-btn").onclick = function () {
+  document.getElementById("withdrawModal").style.display = "flex";
+};
+
+/* CLOSE WITHDRAW */
+document.getElementById("closeWithdraw").onclick = function () {
+  document.getElementById("withdrawModal").style.display = "none";
+};
 window.activatePlan = async (planName, commission, btn) => {
   const user = auth.currentUser;
   if (!user) {
@@ -648,61 +697,4 @@ if (userSnap.exists()) {
       // referrer commission = based on HIS active plan
       const refCommission = plantPts * (commission / 100);
 
-      await updateDoc(doc(db, "users", refDoc.id), {
-        balance: increment(refCommission)
-      });
-    }
-  }
-}
-
-  // 🔄 UI update
-  document.querySelectorAll(".plan button").forEach(b => {
-    b.className = "btn-active";
-    b.innerText = "Activate";
-  });
-
-  btn.className = "btn-on";
-  btn.innerText = "Activated";
-
-  activeBox.style.display = "block";
-  activeBox.innerHTML = `
-    <h3>Active PTS Plant Details</h3>
-    <b>Plan:</b> ${planName}<br>
-    <b>Commission:</b> ${commission}%<br><br>
-    <b>Activated:</b><br>${start.toLocaleString()}<br><br>
-        <b>Expiry:</b><br>${expiry.toLocaleString()}
-  `;
-};
-window.logout = async function () {
-  try {
-    await signOut(auth);
-    location.href = "index.html";
-  } catch (e) {
-    alert("Logout failed");
-    console.error(e);
-  }
-};
-
-</script>
-<script>
-/* OPEN REFER POPUP */
-window.openRefer = () => {
-  document.getElementById("referralModal").style.display = "flex";
-};
-
-/* CLOSE REFER */
-document.getElementById("closeReferral").onclick = () => {
-  document.getElementById("referralModal").style.display = "none";
-};
-
-/* COPY REF LINK */
-document.getElementById("copyReferral").onclick = function () {
-  const input = document.getElementById("refLinkInput");
-  navigator.clipboard.writeText(input.value);
-  this.innerText = "Copied ✓";
-  setTimeout(() => this.innerText = "Copy", 1000);
-};
-</script>
-
-</body>
-  </html>
+      await updateDoc(doc(db, "users", r
