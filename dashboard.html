@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+   <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -303,10 +303,52 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
 
     <button class="close-btn" onclick="document.getElementById('historyPopup').style.display='none'">
       Close
-    </button>
+          </button>
 
   </div>
 </div>
+</div>
+<!-- ===== WITHDRAW POPUP ===== -->
+<div id="withdrawModal" class="dep-modal">
+  <div class="dep-box">
+
+    <h3 class="dep-title">💸 Withdraw PTS</h3>
+
+    <div class="dep-field">
+      <small style="color:#dc2626;font-weight:700">
+        Minimum withdrawal: 10 PTS
+      </small>
+    </div>
+
+    <div class="dep-field">
+      <label>Amount (Min 10 PTS)</label>
+      <input id="withdrawAmount" type="number" min="10" placeholder="Enter amount">
+    </div>
+
+    <div class="dep-field">
+      <label>Withdraw Method</label>
+      <select id="withdrawMethod">
+        <option value="jazz">JazzCash</option>
+        <option value="easy">EasyPaisa</option>
+      </select>
+    </div>
+
+    <div class="dep-field">
+      <label>Wallet Owner Name</label>
+      <input id="withdrawName" type="text" placeholder="Enter your registered name">
+    </div>
+
+    <div class="dep-field">
+      <label>Account Number (JazzCash / EasyPaisa)</label>
+      <input id="withdrawAccount" type="text" maxlength="11" placeholder="Enter 11 digit account number">
+    </div>
+
+    <div class="dep-actions">
+      <button class="confirm-btn">Request Withdraw</button>
+      <button id="closeWithdraw" class="cancel-btn">Cancel</button>
+    </div>
+
+  </div>
 </div>
 <!-- ===== DEPOSIT POPUP ===== -->
 <div id="depositModal" class="dep-modal">
@@ -506,7 +548,7 @@ window.IS_ADMIN = admin;
 
 
 window.openWhatsAppSupport = () => {
-  const user = auth.currentUser;
+    const user = auth.currentUser;
 
   if (!user) {
     alert("User not logged in");
@@ -542,6 +584,16 @@ document.getElementById("openDeposit").onclick = function () {
 /* CLOSE DEPOSIT */
 document.getElementById("closeDeposit").onclick = function () {
   document.getElementById("depositModal").style.display = "none";
+};
+
+/* OPEN WITHDRAW */
+window.openWithdraw = () => {
+  document.getElementById("withdrawModal").style.display = "flex";
+};
+
+/* CLOSE WITHDRAW */
+document.getElementById("closeWithdraw").onclick = () => {
+  document.getElementById("withdrawModal").style.display = "none";
 };
 
 /* AUTO CHANGE NUMBER */
@@ -701,6 +753,15 @@ document.getElementById("copyReferral").onclick = function () {
   navigator.clipboard.writeText(input.value);
   this.innerText = "Copied ✓";
   setTimeout(() => this.innerText = "Copy", 1000);
+};
+window.logout = async function () {
+  try {
+    await signOut(auth);
+    location.href = "index.html";
+  } catch (e) {
+    alert("Logout failed");
+    console.error(e);
+  }
 };
 </script>
 
