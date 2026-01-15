@@ -429,7 +429,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCzHxyLgn9ZKRwD1X0RuUSq3od6MWizieg",
+     apiKey: "AIzaSyCzHxyLgn9ZKRwD1X0RuUSq3od6MWizieg",
   authDomain: "powermax-fe149.firebaseapp.com",
   projectId: "powermax-fe149"
 };
@@ -682,10 +682,11 @@ const selfCommission = plantPts * (DIRECT_COMMISSION / 100);
 await updateDoc(doc(db, "users", user.uid), {
   balance: increment(selfCommission)
 });
-// 📝 LOG DIRECT COMMISSION (for Refer & Earn UI)
+// 🔹 LEVEL 1 – DIRECT COMMISSION LOG
 await addDoc(
   collection(db, "users", user.uid, "directCommissions"),
   {
+    fromUser: user.uid,
     amount: selfCommission,
     plan: planName,
     createdAt: new Date().toISOString()
@@ -849,4 +850,4 @@ window.logout = async function () {
 
 </body>
   </html>
-       
+    
