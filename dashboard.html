@@ -268,7 +268,9 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
     </div>
 
     <h4 class="level l1">Level 1 Team</h4>
-    <div class="level-box">No members yet.</div>
+    <div class="level-box" id="directCommissionBox">
+  No direct commissions yet.
+</div>
 
     <h4 class="level l2">Level 2 Team (3%)</h4>
     <div class="level-box">No members yet.</div>
@@ -303,7 +305,7 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
 
     <button class="close-btn" onclick="document.getElementById('historyPopup').style.display='none'">
       Close
-          </button>
+    </button>
 
   </div>
 </div>
@@ -519,6 +521,10 @@ window.IS_ADMIN = admin;
 
     document.getElementById("userId").innerText =
       snap.data().refCode ?? "NO REF";
+      const refCode = snap.data().refCode;
+const baseUrl = window.location.origin;
+const referralLink = `${baseUrl}/index.html?ref=${refCode}`;
+document.getElementById("refLinkInput").value = referralLink;
       const plantRef = doc(db, "users", user.uid, "plants", "active");
   const plantSnap = await getDoc(plantRef);
 
@@ -548,7 +554,7 @@ window.IS_ADMIN = admin;
 
 
 window.openWhatsAppSupport = () => {
-    const user = auth.currentUser;
+  const user = auth.currentUser;
 
   if (!user) {
     alert("User not logged in");
@@ -676,6 +682,15 @@ const selfCommission = plantPts * (DIRECT_COMMISSION / 100);
 await updateDoc(doc(db, "users", user.uid), {
   balance: increment(selfCommission)
 });
+// 📝 LOG DIRECT COMMISSION (for Refer & Earn UI)
+await addDoc(
+  collection(db, "users", user.uid, "directCommissions"),
+  {
+    amount: selfCommission,
+    plan: planName,
+    createdAt: new Date().toISOString()
+  }
+);
 
 /* =========================
    2️⃣ REFERRAL COMMISSION
@@ -703,6 +718,16 @@ if (userSnap.exists()) {
       await updateDoc(doc(db, "users", refDoc.id), {
         balance: increment(refCommission)
       });
+      // 📝 LOG INDIRECT COMMISSION (for Refer & Earn UI)
+await addDoc(
+  collection(db, "users", refDoc.id, "indirectCommissions"),
+  {
+    fromUser: user.uid,
+    amount: refCommission,
+    plan: planName,
+    createdAt: new Date().toISOString()
+  }
+);
     }
   }
 }
@@ -740,6 +765,63 @@ window.logout = async function () {
 /* OPEN REFER POPUP */
 window.openRefer = () => {
   document.getElementById("referralModal").style.display = "flex";
+  (async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  /* ======================
+     DIRECT COMMISSIONS
+  ====================== */
+  const directBox = document.querySelector(".level-box.l1");
+  directBox.innerHTML = "Loading...";
+
+  const directSnap = await getDocs(
+    collection(db, "users", user.uid, "directCommissions")
+  );
+
+  if (directSnap.empty) {
+    directBox.innerHTML = "No direct commissions yet.";
+  } else {
+    directBox.innerHTML = "";
+    directSnap.forEach(d => {
+      const data = d.data();
+      directBox.innerHTML += `
+        <div class="history-item">
+          <b>${data.amount} PTS</b><br>
+          <small>${data.plan}</small><br>
+          <small>${new Date(data.createdAt).toLocaleString()}</small>
+        </div>
+      `;
+    });
+  }
+
+  /* ======================
+     INDIRECT COMMISSIONS
+  ====================== */
+  const indirectBox = document.querySelector(".level-box.l2");
+  indirectBox.innerHTML = "Loading...";
+
+  const indirectSnap = await getDocs(
+    collection(db, "users", user.uid, "indirectCommissions")
+  );
+
+  if (indirectSnap.empty) {
+    indirectBox.innerHTML = "No referral earnings yet.";
+  } else {
+    indirectBox.innerHTML = "";
+    indirectSnap.forEach(d => {
+      const data = d.data();
+      indirectBox.innerHTML += `
+        <div class="history-item">
+          <b>${data.amount} PTS</b><br>
+          <small>From User: ${data.fromUser}</small><br>
+          <small>${data.plan}</small><br>
+          <small>${new Date(data.createdAt).toLocaleString()}</small>
+        </div>
+      `;
+    });
+  }
+})();
 };
 
 /* CLOSE REFER */
@@ -767,4 +849,4 @@ window.logout = async function () {
 
 </body>
   </html>
-    
+       
