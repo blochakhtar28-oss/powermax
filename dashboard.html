@@ -522,7 +522,7 @@ window.IS_ADMIN = admin;
     document.getElementById("userId").innerText =
       snap.data().refCode ?? "NO REF";
       const refCode = snap.data().refCode;
-const baseUrl = window.location.origin;
+const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, "");
 const referralLink = `${baseUrl}/index.html?ref=${refCode}`;
 document.getElementById("refLinkInput").value = referralLink;
       const plantRef = doc(db, "users", user.uid, "plants", "active");
