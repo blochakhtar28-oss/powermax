@@ -837,15 +837,6 @@ document.getElementById("copyReferral").onclick = function () {
   this.innerText = "Copied ✓";
   setTimeout(() => this.innerText = "Copy", 1000);
 };
-window.logout = async function () {
-  try {
-    await signOut(auth);
-    location.href = "index.html";
-  } catch (e) {
-    alert("Logout failed");
-    console.error(e);
-  }
-};
 </script>
 
 </body>
