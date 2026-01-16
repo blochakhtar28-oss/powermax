@@ -229,6 +229,7 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
   <div><b>User ID:</b> <span id="userId">Loading...</span></div>
   <div><b>Balance:</b> <span id="userBalance">0</span> PTS</div>
   <div id="useremail">Loading...</div>
+  <div><b>Referred By:</b> <span id="referredBy">None</span></div>
 </div>
 
 <!-- ALL PTS PLANTS -->
@@ -268,14 +269,12 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
     </div>
 
     <h4 class="level l1">Level 1 Team</h4>
-    <div class="level-box" id="level1Box">
-  Loading...
+    <div class="level-box" id="directCommissionBox">
+  No direct commissions yet.
 </div>
 
     <h4 class="level l2">Level 2 Team (3%)</h4>
-    <div class="level-box" id="level2Box">
-  Loading...
-</div>
+    <div class="level-box" id="indirectCommissionBox">No members yet.</div>
 
     <button id="closeReferral" class="close-ref">Close</button>
 
@@ -431,7 +430,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCzHxyLgn9ZKRwD1X0RuUSq3od6MWizieg",
+     apiKey: "AIzaSyCzHxyLgn9ZKRwD1X0RuUSq3od6MWizieg",
   authDomain: "powermax-fe149.firebaseapp.com",
   projectId: "powermax-fe149"
 };
@@ -523,6 +522,8 @@ window.IS_ADMIN = admin;
 
     document.getElementById("userId").innerText =
       snap.data().refCode ?? "NO REF";
+      document.getElementById("referredBy").innerText =
+  snap.data().referredBy ?? "Direct / No Referrer";
       const refCode = snap.data().refCode;
 const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, "");
 const referralLink = `${baseUrl}/index.html?ref=${refCode}`;
@@ -765,55 +766,68 @@ window.logout = async function () {
 
 </script>
 <script>
+/* OPEN REFER POPUP */
 window.openRefer = () => {
   document.getElementById("referralModal").style.display = "flex";
-
   (async () => {
-    const user = auth.currentUser;
-    if (!user) return;
+  const user = auth.currentUser;
+  if (!user) return;
 
-    const userSnap = await getDoc(doc(db, "users", user.uid));
-    const myRefCode = userSnap.data().refCode;
+  /* ======================
+     DIRECT COMMISSIONS
+  ====================== */
+  const directBox = document.getElementById("directCommissionBox");
+  directBox.innerHTML = "Loading...";
 
-  /* =========================
-       LEVEL 1 — ONLY COUNT
-    ========================= */
-    const l1Box = document.getElementById("level1Box");
-    l1Box.innerHTML = "Loading...";
+  const directSnap = await getDocs(
+    collection(db, "users", user.uid, "directCommissions")
+  );
 
-    const usersSnap = await getDocs(
-      query(collection(db, "users"), where("referredBy", "==", myRefCode)
-    );
+  if (directSnap.empty) {
+    directBox.innerHTML = "No direct commissions yet.";
+  } else {
+    directBox.innerHTML = "";
+    directSnap.forEach(d => {
+      const data = d.data();
+      directBox.innerHTML += `
+        <div class="history-item">
+          <b>${data.amount} PTS</b><br>
+          <small>${data.plan}</small><br>
+          <small>${new Date(data.createdAt).toLocaleString()}</small>
+        </div>
+      `;
+    });
+  }
 
-    const totalReferrals = usersSnap.size;
-    l1Box.innerHTML = `<b>You referred ${totalReferrals} users</b>`;
+  /* ======================
+     INDIRECT COMMISSIONS
+  ====================== */
+  const indirectBox = document.querySelector(
+  "#directCommissionBox"
+).parentElement.querySelectorAll(".level-box")[1];
+  indirectBox.innerHTML = "Loading...";
 
-    /* =========================
-       LEVEL 2 — COMMISSION + UID
-    ========================= */
-    const l2Box = document.getElementById("level2Box");
-    l2Box.innerHTML = "Loading...";
+  const indirectSnap = await getDocs(
+    collection(db, "users", user.uid, "indirectCommissions")
+  );
 
-    const indirectSnap = await getDocs(
-      collection(db, "users", user.uid, "indirectCommissions")
-    );
-
-    if (indirectSnap.empty) {
-      l2Box.innerHTML = "No referral earnings yet.";
-    } else {
-      l2Box.innerHTML = "";
-      indirectSnap.forEach(docu => {
-        const d = docu.data();
-        l2Box.innerHTML += `
-          <div class="history-item">
-            <b>${d.amount} PTS</b><br>
-            <small>User UID: ${d.fromUser}</small><br>
-            <small>${new Date(d.createdAt).toLocaleString()}</small>
-          </div>
-        `;
-      });
-    }
-  })();
+  if (indirectSnap.empty) {
+    indirectBox.innerHTML = "No referral earnings yet.";
+  } else {
+    indirectBox.innerHTML = "";
+    indirectSnap.forEach(d => {
+      const data = d.data();
+      indirectBox.innerHTML += `
+        <div class="history-item">
+          <b>${data.amount} PTS</b><br>
+          <small>From User: ${data.fromUser}</small><br>
+          <small>${data.plan}</small><br>
+          <small>${new Date(data.createdAt).toLocaleString()}</small>
+        </div>
+      `;
+    });
+  }
+})();
 };
 
 /* CLOSE REFER */
