@@ -400,7 +400,9 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
     </div>
 
     <div class="dep-actions">
-      <button class="confirm-btn">Confirm Request</button>
+      <button class="confirm-btn" id="confirmDeposit">
+  Confirm Request
+</button>
       <button id="closeDeposit" class="cancel-btn">Cancel</button>
     </div>
 
@@ -553,6 +555,53 @@ document.getElementById("refLinkInput").value = referralLink;
   }
   }
 });
+window.logout = async function () {
+  await signOut(auth);
+  location.href = "index.html";
+};
+
+/* ====== DEPOSIT REQUEST SAVE CODE ====== */
+document.getElementById("confirmDeposit").onclick = async () => {
+  const user = auth.currentUser;
+  if (!user) {
+    alert("User not logged in");
+    return;
+  }
+
+  const amountText =
+    document.querySelector("#depositModal select").value;
+  const amount = parseInt(amountText);
+
+  const walletType = document.getElementById("walletSelect").value;
+  const adminWallet = document.getElementById("walletNumber").value;
+
+  const senderName =
+    document.querySelectorAll("#depositModal input")[1].value;
+  const senderNumber =
+    document.querySelectorAll("#depositModal input")[2].value;
+
+  if (!senderName || !senderNumber) {
+    alert("Please fill all fields");
+    return;
+  }
+
+  await addDoc(collection(db, "deposits"), {
+    uid: user.uid,
+    email: user.email,
+    amount: amount,
+    walletType: walletType,
+    adminWallet: adminWallet,
+    senderName: senderName,
+    senderNumber: senderNumber,
+    status: "pending",
+    createdAt: new Date().toISOString()
+  });
+
+  alert("Deposit request submitted");
+  document.getElementById("depositModal").style.display = "none";
+};
+
+</script>
 
 
 
@@ -763,6 +812,9 @@ window.logout = async function () {
     console.error(e);
   }
 };
+
+</script>
+<script>
 /* OPEN REFER POPUP */
 window.openRefer = () => {
   document.getElementById("referralModal").style.display = "flex";
@@ -840,5 +892,7 @@ document.getElementById("copyReferral").onclick = function () {
   setTimeout(() => this.innerText = "Copy", 1000);
 };
 </script>
+
 </body>
-</html>
+  </html>
+    
