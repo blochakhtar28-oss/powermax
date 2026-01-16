@@ -63,8 +63,15 @@ button{
 <button class="logout" onclick="logout()">Logout</button>
 
 <script type="module">
+/* =========================
+   1️⃣ IMPORTS
+========================= */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
   getFirestore,
   collection,
@@ -74,22 +81,44 @@ import {
   increment
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+/* =========================
+   2️⃣ FIREBASE CONFIG
+========================= */
 const firebaseConfig = {
   apiKey: "AIzaSyCzHxyLgn9ZKRwD1X0RuUSq3od6MWizieg",
   authDomain: "powermax-fe149.firebaseapp.com",
   projectId: "powermax-fe149"
 };
 
-const ADMIN_EMAIL = "YOUR_ADMIN_GMAIL_HERE";
+/* =========================
+   3️⃣ ADMIN EMAIL
+========================= */
+const ADMIN_EMAIL = "blochakhtar28@gmail.com";
 
+/* =========================
+   4️⃣ INIT
+========================= */
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// 🔓 ADMIN PANEL – DIRECT ACCESS (NO LOGIN FOR NOW)
-loadDeposits();
-loadWithdraws();
+/* =========================
+   5️⃣ LOGIN GUARD
+========================= */
+onAuthStateChanged(auth, (user)=>{
+  if(!user || user.email !== ADMIN_EMAIL){
+    window.location.replace("admin-login.html");
+    return;
+  }
 
+  // ✅ ADMIN VERIFIED
+  loadDeposits();
+  loadWithdraws();
+});
+
+/* =========================
+   6️⃣ DEPOSITS
+========================= */
 async function loadDeposits(){
   const box = document.getElementById("depositList");
   box.innerHTML = "";
@@ -106,13 +135,22 @@ async function loadDeposits(){
       <div class="item">
         <b>User:</b> ${data.uid}<br>
         <b>Amount:</b> ${data.amount} PTS<br><br>
-        <button class="approve" onclick="approveDeposit('${d.id}','${data.uid}',${data.amount})">Approve</button>
-        <button class="reject" onclick="reject('deposits','${d.id}')">Reject</button>
+        <button class="approve"
+          onclick="approveDeposit('${d.id}','${data.uid}',${data.amount})">
+          Approve
+        </button>
+        <button class="reject"
+          onclick="reject('deposits','${d.id}')">
+          Reject
+        </button>
       </div>
     `;
   });
 }
 
+/* =========================
+   7️⃣ WITHDRAWS
+========================= */
 async function loadWithdraws(){
   const box = document.getElementById("withdrawList");
   box.innerHTML = "";
@@ -129,35 +167,44 @@ async function loadWithdraws(){
       <div class="item">
         <b>User:</b> ${data.uid}<br>
         <b>Amount:</b> ${data.amount} PTS<br><br>
-        <button class="approve" onclick="approveWithdraw('${d.id}')">Approve</button>
-        <button class="reject" onclick="reject('withdraws','${d.id}')">Reject</button>
+        <button class="approve"
+          onclick="approveWithdraw('${d.id}')">
+          Approve
+        </button>
+        <button class="reject"
+          onclick="reject('withdraws','${d.id}')">
+          Reject
+        </button>
       </div>
     `;
   });
 }
 
+/* =========================
+   8️⃣ ACTIONS
+========================= */
 window.approveDeposit = async (id, uid, amount)=>{
   await updateDoc(doc(db,"users",uid),{
     balance: increment(amount)
   });
   await updateDoc(doc(db,"deposits",id),{status:"approved"});
   location.reload();
-}
+};
 
 window.approveWithdraw = async (id)=>{
   await updateDoc(doc(db,"withdraws",id),{status:"approved"});
   location.reload();
-}
+};
 
 window.reject = async (col,id)=>{
   await updateDoc(doc(db,col,id),{status:"rejected"});
   location.reload();
-}
+};
 
 window.logout = async ()=>{
   await signOut(auth);
-  location.href="index.html";
-}
+  window.location.href = "admin-login.html";
+};
 </script>
 
 </body>
