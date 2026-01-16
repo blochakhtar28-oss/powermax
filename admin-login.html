@@ -1,1 +1,41 @@
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+/* 🔧 Firebase Config */
+const firebaseConfig = {
+  apiKey: "AIzaSyCzHxyLgn9ZKRwD1X0RuUSq3od6MWizieg",
+  authDomain: "powermax-fe149.firebaseapp.com",
+  projectId: "powermax-fe149"
+};
+
+/* 🔐 Admin Email */
+const ADMIN_EMAIL = "blochakhtar28@gmail.com";
+
+/* 🔥 Init Firebase */
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+/* 🔑 Login Function */
+window.login = async () => {
+  try {
+    const res = await signInWithPopup(auth, provider);
+
+    if (res.user.email !== ADMIN_EMAIL) {
+      alert("❌ You are not authorized as admin");
+      return;
+    }
+
+    // ✅ Admin verified
+    window.location.href = "admin.html";
+
+  } catch (e) {
+    alert(e.message);
+  }
+};
+</script>
