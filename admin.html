@@ -11,12 +11,8 @@ body{
   background:#0f172a;
   color:#e5e7eb;
   padding:20px;
-  display:none; /* 🔒 hide until admin verified */
 }
-h1{
-  text-align:center;
-  margin-bottom:20px;
-}
+h1{text-align:center;margin-bottom:20px}
 .section{
   background:#020617;
   border-radius:12px;
@@ -39,11 +35,7 @@ button{
 }
 .approve{background:#22c55e;color:#000}
 .reject{background:#ef4444;color:#fff}
-.logout{
-  background:#f97316;
-  width:100%;
-  margin-top:20px;
-}
+.logout{background:#f97316;width:100%;margin-top:20px}
 </style>
 </head>
 
@@ -64,9 +56,13 @@ button{
 <button class="logout" onclick="logout()">Logout</button>
 
 <script type="module">
-/* 🔥 FIREBASE IMPORTS */
+/* ---------- FIREBASE INIT ---------- */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { 
+  getAuth,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
   getFirestore,
   collection,
@@ -76,35 +72,31 @@ import {
   increment
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-/* 🔥 FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyCzHxyLgn9ZKRwD1X0RuUSq3od6MWizieg",
   authDomain: "powermax-fe149.firebaseapp.com",
   projectId: "powermax-fe149"
 };
 
-/* 🔐 ADMIN EMAIL */
 const ADMIN_EMAIL = "blochakhtar28@gmail.com";
 
-/* 🔥 INIT */
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-/* 🔒 AUTH PROTECTION */
+/* ---------- AUTH GUARD (VERY IMPORTANT) ---------- */
 onAuthStateChanged(auth, (user)=>{
   if(!user || user.email !== ADMIN_EMAIL){
     window.location.replace("admin-login.html");
     return;
   }
 
-  // ✅ ADMIN VERIFIED
-  document.body.style.display = "block";
+  // ✅ Only AFTER login
   loadDeposits();
   loadWithdraws();
 });
 
-/* 💰 LOAD DEPOSITS */
+/* ---------- FUNCTIONS ---------- */
 async function loadDeposits(){
   const box = document.getElementById("depositList");
   box.innerHTML = "";
@@ -120,7 +112,7 @@ async function loadDeposits(){
     box.innerHTML += `
       <div class="item">
         <b>User:</b> ${data.uid}<br>
-        <b>Amount:</b> ${data.amount} PTS<br><br>
+        <b>Amount:</b> ${data.amount}<br><br>
         <button class="approve" onclick="approveDeposit('${d.id}','${data.uid}',${data.amount})">Approve</button>
         <button class="reject" onclick="reject('deposits','${d.id}')">Reject</button>
       </div>
@@ -128,7 +120,6 @@ async function loadDeposits(){
   });
 }
 
-/* 💸 LOAD WITHDRAWS */
 async function loadWithdraws(){
   const box = document.getElementById("withdrawList");
   box.innerHTML = "";
@@ -144,7 +135,7 @@ async function loadWithdraws(){
     box.innerHTML += `
       <div class="item">
         <b>User:</b> ${data.uid}<br>
-        <b>Amount:</b> ${data.amount} PTS<br><br>
+        <b>Amount:</b> ${data.amount}<br><br>
         <button class="approve" onclick="approveWithdraw('${d.id}')">Approve</button>
         <button class="reject" onclick="reject('withdraws','${d.id}')">Reject</button>
       </div>
@@ -152,7 +143,6 @@ async function loadWithdraws(){
   });
 }
 
-/* ✅ ACTIONS */
 window.approveDeposit = async (id, uid, amount)=>{
   await updateDoc(doc(db,"users",uid),{
     balance: increment(amount)
@@ -171,7 +161,6 @@ window.reject = async (col,id)=>{
   location.reload();
 }
 
-/* 🚪 LOGOUT */
 window.logout = async ()=>{
   await signOut(auth);
   window.location.replace("admin-login.html");
