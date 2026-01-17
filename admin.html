@@ -48,15 +48,10 @@ button{
   <div id="depositList">Loading...</div>
 </div>
 
-<div class="section">
-  <h3>💸 Withdraw Requests</h3>
-  <div id="withdrawList">Loading...</div>
-</div>
-
 <button class="logout" onclick="logout()">Logout</button>
 
 <script type="module">
-/* ---------- FIREBASE INIT ---------- */
+/* ---------- FIREBASE ---------- */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { 
   getAuth,
@@ -84,24 +79,22 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-/* ---------- AUTH GUARD (VERY IMPORTANT) ---------- */
+/* ---------- AUTH CHECK ---------- */
 onAuthStateChanged(auth, (user)=>{
   if(!user || user.email !== ADMIN_EMAIL){
-    window.location.replace("admin-login.html");
+    location.replace("admin-login.html");
     return;
   }
-
-  // ✅ Only AFTER login
   loadDeposits();
-  loadWithdraws();
 });
 
-/* ---------- FUNCTIONS ---------- */
+/* ---------- LOAD DEPOSITS ---------- */
 async function loadDeposits(){
   const box = document.getElementById("depositList");
   box.innerHTML = "";
 
   const snap = await getDocs(collection(db,"deposits"));
+
   if(snap.empty){
     box.innerHTML = "No deposit requests.";
     return;
@@ -109,62 +102,56 @@ async function loadDeposits(){
 
   snap.forEach(d=>{
     const data = d.data();
+    if(data.status !== "pending") return;
+
     box.innerHTML += `
-      <div class="item">
-        <b>User:</b> ${data.uid}<br>
-        <b>Amount:</b> ${data.amount}<br><br>
-        <button class="approve" onclick="approveDeposit('${d.id}','${data.uid}',${data.amount})">Approve</button>
-        <button class="reject" onclick="reject('deposits','${d.id}')">Reject</button>
+      <div class="item" id="dep-${d.id}">
+        <b>User ID:</b> ${data.uid}<br>
+        <b>Wallet Owner Name:</b> ${data.senderName}<br>
+        <b>Wallet Number:</b> ${data.senderNumber}<br>
+        <b>Amount:</b> ${data.amount} PTS<br><br>
+
+        <button class="approve"
+          onclick="approveDeposit('${d.id}','${data.uid}',${data.amount})">
+          Approve
+        </button>
+
+        <button class="reject"
+          onclick="rejectDeposit('${d.id}')">
+          Reject
+        </button>
       </div>
     `;
   });
 }
 
-async function loadWithdraws(){
-  const box = document.getElementById("withdrawList");
-  box.innerHTML = "";
-
-  const snap = await getDocs(collection(db,"withdraws"));
-  if(snap.empty){
-    box.innerHTML = "No withdraw requests.";
-    return;
-  }
-
-  snap.forEach(d=>{
-    const data = d.data();
-    box.innerHTML += `
-      <div class="item">
-        <b>User:</b> ${data.uid}<br>
-        <b>Amount:</b> ${data.amount}<br><br>
-        <button class="approve" onclick="approveWithdraw('${d.id}')">Approve</button>
-        <button class="reject" onclick="reject('withdraws','${d.id}')">Reject</button>
-      </div>
-    `;
-  });
-}
-
+/* ---------- APPROVE ---------- */
 window.approveDeposit = async (id, uid, amount)=>{
   await updateDoc(doc(db,"users",uid),{
     balance: increment(amount)
   });
-  await updateDoc(doc(db,"deposits",id),{status:"approved"});
-  location.reload();
-}
 
-window.approveWithdraw = async (id)=>{
-  await updateDoc(doc(db,"withdraws",id),{status:"approved"});
-  location.reload();
-}
+  await updateDoc(doc(db,"deposits",id),{
+    status:"approved"
+  });
 
-window.reject = async (col,id)=>{
-  await updateDoc(doc(db,col,id),{status:"rejected"});
-  location.reload();
-}
+  document.getElementById("dep-"+id).remove();
+};
 
+/* ---------- REJECT ---------- */
+window.rejectDeposit = async (id)=>{
+  await updateDoc(doc(db,"deposits",id),{
+    status:"rejected"
+  });
+
+  document.getElementById("dep-"+id).remove();
+};
+
+/* ---------- LOGOUT ---------- */
 window.logout = async ()=>{
   await signOut(auth);
-  window.location.replace("admin-login.html");
-}
+  location.replace("admin-login.html");
+};
 </script>
 
 </body>
