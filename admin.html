@@ -60,6 +60,10 @@ button{
 >
   <div id="depositList">Loading...</div>
 </div>
+<div class="section">
+  <h3>💸 Withdraw Requests</h3>
+  <div id="withdrawList">Loading...</div>
+</div>
 
 <button class="logout" onclick="logout()">Logout</button>
 
@@ -99,6 +103,7 @@ onAuthStateChanged(auth, (user)=>{
     return;
   }
   loadDeposits();
+  loadWithdraws();
 });
 
 /* ---------- LOAD DEPOSITS ---------- */
@@ -145,7 +150,45 @@ if (searchValue && !String(data.senderNumber).includes(searchValue)) {
     `;
   });
 }
-  window.loadDeposits = loadDeposits;
+window.loadDeposits = loadDeposits;
+/* ---------- LOAD WITHDRAWS ---------- */
+async function loadWithdraws(){
+  const box = document.getElementById("withdrawList");
+  box.innerHTML = "";
+
+  const snap = await getDocs(collection(db,"withdraws"));
+
+  if(snap.empty){
+    box.innerHTML = "No withdraw requests.";
+    return;
+  }
+
+  snap.forEach(d=>{
+    const data = d.data();
+    if(data.status !== "pending") return;
+
+    box.innerHTML += `
+      <div class="item" id="wd-${d.id}">
+        <b>User ID:</b> ${data.uid}<br>
+        <b>Wallet Name:</b> ${data.walletName}<br>
+        <b>Wallet Number:</b> ${data.walletNumber}<br>
+        <b>Amount:</b> ${data.amount} PTS<br><br>
+
+        <button class="approve"
+          onclick="approveWithdraw('${d.id}')">
+          Approve
+        </button>
+
+        <button class="reject"
+          onclick="rejectWithdraw('${d.id}')">
+          Reject
+        </button>
+      </div>
+    `;
+  });
+}
+
+window.loadWithdraws = loadWithdraws;
 
 /* ---------- APPROVE ---------- */
 window.approveDeposit = async (id, uid, amount)=>{
