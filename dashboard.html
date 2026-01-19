@@ -60,14 +60,9 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
   background:#eee;
   font-weight:600;
 }
-   /* ❌ Sirf transaction ke andar ke chhote buttons hide */
-#historyPopup .history-item button {
+   /* 🔒 Hide small action buttons in transaction history */
+.history-item button {
   display: none !important;
-}
-
-/* ✅ Close button ko visible rakho */
-#historyPopup .close-btn {
-  display: block !important;
 }
 
 .active-box{display:none;background:#fff;border-radius:14px;padding:14px;margin-top:14px;box-shadow:0 6px 16px rgba(0,0,0,.08);font-size:14px}
