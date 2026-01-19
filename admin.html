@@ -145,6 +145,7 @@ if (searchValue && !String(data.senderNumber).includes(searchValue)) {
     `;
   });
 }
+  window.loadDeposits = loadDeposits;
 
 /* ---------- APPROVE ---------- */
 window.approveDeposit = async (id, uid, amount)=>{
