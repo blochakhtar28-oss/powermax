@@ -49,6 +49,7 @@ button{
   type="text"
   id="depositSearch"
   placeholder="Search by Wallet Number"
+  oninput="loadDeposits()"
   style="
     width:100%;
     padding:10px;
@@ -119,7 +120,7 @@ async function loadDeposits(){
   snap.forEach(d=>{
     const data = d.data();
     // 🔍 FILTER BY WALLET NUMBER
-if (searchValue && !data.adminWallet?.includes(searchValue)) {
+if (searchValue && !String(data.senderNumber).includes(searchValue)) {
   return;
 }
     if(data.status !== "pending") return;
