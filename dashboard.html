@@ -286,7 +286,7 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
 
     <h3>📜 Transaction History</h3>
 
-    <div class="history-item">
+    <div id="historyList">Loading...</div>
       <b>Deposit:</b> 500 PTS<br>
       <span class="history-status-approved">Approved</span><br>
       <small>02 Jan 2026, 04:20 PM</small>
@@ -649,6 +649,75 @@ document.getElementById("confirmWithdraw").onclick = async () => {
   alert("Withdraw request submitted");
   document.getElementById("withdrawModal").style.display = "none";
 };
+async function loadHistory() {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const box = document.getElementById("historyList");
+  box.innerHTML = "Loading...";
+
+  let history = [];
+
+  // 🔹 Deposits
+  const depSnap = await getDocs(
+    query(
+      collection(db, "deposits"),
+      where("uid", "==", user.uid)
+    )
+  );
+
+  depSnap.forEach(d => {
+    history.push({
+      type: "Deposit",
+      amount: d.data().amount,
+      status: d.data().status,
+      time: d.data().createdAt
+    });
+  });
+
+  // 🔹 Withdraws
+  const withSnap = await getDocs(
+    query(
+      collection(db, "withdraws"),
+      where("uid", "==", user.uid)
+    )
+  );
+
+  withSnap.forEach(d => {
+    history.push({
+      type: "Withdraw",
+      amount: d.data().amount,
+      status: d.data().status,
+      time: d.data().createdAt
+    });
+  });
+
+  if (history.length === 0) {
+    box.innerHTML = "No transactions yet.";
+    return;
+  }
+
+  // 🔽 Sort by latest
+  history.sort((a, b) => new Date(b.time) - new Date(a.time));
+
+  box.innerHTML = "";
+
+  history.forEach(h => {
+    let statusClass = "history-status-pending";
+    if (h.status === "approved") statusClass = "history-status-approved";
+    if (h.status === "rejected") statusClass = "history-status-cancel";
+
+    box.innerHTML += `
+      <div class="history-item">
+        <b>${h.type}:</b> ${h.amount} PTS<br>
+        <span class="${statusClass}">
+          ${h.status.toUpperCase()}
+        </span><br>
+        <small>${new Date(h.time).toLocaleString()}</small>
+      </div>
+    `;
+  });
+}
    
 window.openWhatsAppSupport = () => {
   const user = auth.currentUser;
@@ -676,8 +745,9 @@ My Query is: `;
 
   window.open(url, "_blank");
 };
-document.getElementById("openHistory").onclick = () => {
+document.getElementById("openHistory").onclick = async () => {
   document.getElementById("historyPopup").style.display = "flex";
+  await loadHistory();
 };
 /* OPEN DEPOSIT */
 document.getElementById("openDeposit").onclick = function () {
