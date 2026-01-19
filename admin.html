@@ -79,6 +79,7 @@ import {
   getFirestore,
   collection,
   getDocs,
+  getDoc,
   updateDoc,
   doc,
   increment
@@ -168,7 +169,7 @@ async function loadWithdraws(){
     if(data.status !== "pending") return;
 
     box.innerHTML += `
-      <div class="item" id="wd-${d.id}">
+      <div class="item" id="with-${d.id}">
         <b>User ID:</b> ${data.uid}<br>
         <b>Wallet Name:</b> ${data.walletName}<br>
         <b>Wallet Number:</b> ${data.walletNumber}<br>
@@ -210,6 +211,43 @@ window.rejectDeposit = async (id)=>{
   });
 
   document.getElementById("dep-"+id).remove();
+};
+/* ---------- WITHDRAW APPROVE ---------- */
+window.approveWithdraw = async (id)=>{
+  // 1️⃣ withdraw doc get کریں
+  const withRef = doc(db,"withdraws",id);
+  const snap = await getDoc(withRef);
+
+  if(!snap.exists()){
+    alert("Withdraw request not found");
+    return;
+  }
+
+  const data = snap.data();
+  const uid = data.uid;
+  const amount = data.amount;
+
+  // 2️⃣ user balance minus کریں
+  await updateDoc(doc(db,"users",uid),{
+    balance: increment(-amount)
+  });
+
+  // 3️⃣ withdraw status approved کریں
+  await updateDoc(withRef,{
+    status: "approved"
+  });
+
+  // 4️⃣ UI سے remove
+  document.getElementById("with-"+id).remove();
+};
+
+/* ---------- WITHDRAW REJECT ---------- */
+window.rejectWithdraw = async (id)=>{
+  await updateDoc(doc(db,"withdraws",id),{
+    status: "rejected"
+  });
+
+  document.getElementById("with-"+id).remove();
 };
 
 /* ---------- LOGOUT ---------- */
