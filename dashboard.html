@@ -809,7 +809,7 @@ window.activatePlan = async (planName, commission, btn) => {
   const expiry = new Date();
   // 🔧 get expiry days from admin settings
 const settings = await loadGlobalSettings();
-const days = settings.planExpiryDays || 30;
+const days = settings.planExpiryDays || 01;
 
 expiry.setDate(start.getDate() + days);
   // 🔒 LOW BALANCE CHECK
