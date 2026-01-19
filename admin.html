@@ -45,6 +45,18 @@ button{
 
 <div class="section">
   <h3>💰 Deposit Requests</h3>
+  <input
+  type="text"
+  id="depositSearch"
+  placeholder="Search by Wallet Number"
+  style="
+    width:100%;
+    padding:10px;
+    margin-bottom:12px;
+    border-radius:8px;
+    border:none;
+  "
+>
   <div id="depositList">Loading...</div>
 </div>
 
@@ -92,6 +104,10 @@ onAuthStateChanged(auth, (user)=>{
 async function loadDeposits(){
   const box = document.getElementById("depositList");
   box.innerHTML = "";
+  const searchValue = document
+  .getElementById("depositSearch")
+  .value
+  .trim();
 
   const snap = await getDocs(collection(db,"deposits"));
 
@@ -102,6 +118,10 @@ async function loadDeposits(){
 
   snap.forEach(d=>{
     const data = d.data();
+    // 🔍 FILTER BY WALLET NUMBER
+if (searchValue && !data.adminWallet?.includes(searchValue)) {
+  return;
+}
     if(data.status !== "pending") return;
 
     box.innerHTML += `
