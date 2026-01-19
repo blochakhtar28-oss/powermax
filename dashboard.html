@@ -347,7 +347,9 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
     </div>
 
     <div class="dep-actions">
-      <button class="confirm-btn">Request Withdraw</button>
+      <button class="confirm-btn" id="confirmWithdraw">
+  Request Withdraw
+</button>
       <button id="closeWithdraw" class="cancel-btn">Cancel</button>
     </div>
 
@@ -599,6 +601,53 @@ document.getElementById("confirmDeposit").onclick = async () => {
 
   alert("Deposit request submitted");
   document.getElementById("depositModal").style.display = "none";
+};
+/* ====== WITHDRAW REQUEST SAVE CODE ====== */
+document.getElementById("confirmWithdraw").onclick = async () => {
+  const user = auth.currentUser;
+  if (!user) {
+    alert("User not logged in");
+    return;
+  }
+
+  const amount = parseInt(
+    document.getElementById("withdrawAmount").value
+  );
+  const method = document.getElementById("withdrawMethod").value;
+  const name = document.getElementById("withdrawName").value;
+  const account = document.getElementById("withdrawAccount").value;
+
+  if (!amount || amount < 10) {
+    alert("Minimum withdrawal is 10 PTS");
+    return;
+  }
+
+  if (!name || !account) {
+    alert("Please fill all fields");
+    return;
+  }
+
+  const userRef = doc(db, "users", user.uid);
+  const snap = await getDoc(userRef);
+  const balance = snap.data().balance || 0;
+
+  if (balance < amount) {
+    alert("Insufficient balance");
+    return;
+  }
+
+  await addDoc(collection(db, "withdraws"), {
+    uid: user.uid,
+    amount: amount,
+    method: method,
+    walletName: name,
+    walletNumber: account,
+    status: "pending",
+    createdAt: new Date().toISOString()
+  });
+
+  alert("Withdraw request submitted");
+  document.getElementById("withdrawModal").style.display = "none";
 };
    
 window.openWhatsAppSupport = () => {
