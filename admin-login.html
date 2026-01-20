@@ -59,7 +59,16 @@ const ADMIN_EMAIL = "blochakhtar28@gmail.com";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+import { setPersistence, browserLocalPersistence, onAuthStateChanged } 
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+setPersistence(auth, browserLocalPersistence);
 const provider = new GoogleAuthProvider();
+onAuthStateChanged(auth, (user)=>{
+  if(user && user.email === ADMIN_EMAIL){
+    window.location.href = "admin.html";
+  }
+});
 
 window.login = async ()=>{
   try{
