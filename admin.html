@@ -60,10 +60,6 @@ button{
 >
   <div id="depositList">Loading...</div>
 </div>
-<div class="section">
-  <h3>💸 Withdraw Requests</h3>
-  <div id="withdrawList">Loading...</div>
-</div>
 
 <button class="logout" onclick="logout()">Logout</button>
 
@@ -79,7 +75,6 @@ import {
   getFirestore,
   collection,
   getDocs,
-  getDoc,
   updateDoc,
   doc,
   increment
@@ -104,7 +99,6 @@ onAuthStateChanged(auth, (user)=>{
     return;
   }
   loadDeposits();
-  loadWithdraws();
 });
 
 /* ---------- LOAD DEPOSITS ---------- */
@@ -134,8 +128,9 @@ if (searchValue && !String(data.senderNumber).includes(searchValue)) {
     box.innerHTML += `
       <div class="item" id="dep-${d.id}">
         <b>User ID:</b> ${data.uid}<br>
-        <b>Wallet Owner Name:</b> ${data.senderName}<br>
-        <b>Wallet Number:</b> ${data.senderNumber}<br>
+        <b>Payment Method:</b> ${data.walletType === "jazz" ? "JazzCash" : "EasyPaisa"}<br>
+<b>Sender Wallet Name:</b> ${data.senderName}<br>
+<b>Sender Wallet Number:</b> ${data.senderNumber}<br>
         <b>Amount:</b> ${data.amount} PTS<br><br>
 
         <button class="approve"
@@ -152,44 +147,6 @@ if (searchValue && !String(data.senderNumber).includes(searchValue)) {
   });
 }
 window.loadDeposits = loadDeposits;
-/* ---------- LOAD WITHDRAWS ---------- */
-async function loadWithdraws(){
-  const box = document.getElementById("withdrawList");
-  box.innerHTML = "";
-
-  const snap = await getDocs(collection(db,"withdraws"));
-
-  if(snap.empty){
-    box.innerHTML = "No withdraw requests.";
-    return;
-  }
-
-  snap.forEach(d=>{
-    const data = d.data();
-    if(data.status !== "pending") return;
-
-    box.innerHTML += `
-      <div class="item" id="with-${d.id}">
-        <b>User ID:</b> ${data.uid}<br>
-        <b>Wallet Name:</b> ${data.walletName}<br>
-        <b>Wallet Number:</b> ${data.walletNumber}<br>
-        <b>Amount:</b> ${data.amount} PTS<br><br>
-
-        <button class="approve"
-          onclick="approveWithdraw('${d.id}')">
-          Approve
-        </button>
-
-        <button class="reject"
-          onclick="rejectWithdraw('${d.id}')">
-          Reject
-        </button>
-      </div>
-    `;
-  });
-}
-
-window.loadWithdraws = loadWithdraws;
 
 /* ---------- APPROVE ---------- */
 window.approveDeposit = async (id, uid, amount)=>{
@@ -212,43 +169,6 @@ window.rejectDeposit = async (id)=>{
 
   document.getElementById("dep-"+id).remove();
 };
-/* ---------- WITHDRAW APPROVE ---------- */
-window.approveWithdraw = async (id)=>{
-  // 1️⃣ withdraw doc get کریں
-  const withRef = doc(db,"withdraws",id);
-  const snap = await getDoc(withRef);
-
-  if(!snap.exists()){
-    alert("Withdraw request not found");
-    return;
-  }
-
-  const data = snap.data();
-  const uid = data.uid;
-  const amount = data.amount;
-
-  // 2️⃣ user balance minus کریں
-  await updateDoc(doc(db,"users",uid),{
-    balance: increment(-amount)
-  });
-
-  // 3️⃣ withdraw status approved کریں
-  await updateDoc(withRef,{
-    status: "approved"
-  });
-
-  // 4️⃣ UI سے remove
-  document.getElementById("with-"+id).remove();
-};
-
-/* ---------- WITHDRAW REJECT ---------- */
-window.rejectWithdraw = async (id)=>{
-  await updateDoc(doc(db,"withdraws",id),{
-    status: "rejected"
-  });
-
-  document.getElementById("with-"+id).remove();
-};
 
 /* ---------- LOGOUT ---------- */
 window.logout = async ()=>{
@@ -259,3 +179,4 @@ window.logout = async ()=>{
 
 </body>
 </html>
+
