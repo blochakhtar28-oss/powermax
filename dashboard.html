@@ -565,6 +565,45 @@ window.logout = async function () {
 /* ====== DEPOSIT REQUEST SAVE CODE ====== */
 document.getElementById("confirmDeposit").onclick = async () => {
   const user = auth.currentUser;
+  // ⏳ CHECK: 24 HOURS DEPOSIT LIMIT
+const now = new Date();
+const last24Hours = new Date(
+  now.getTime() - 24 * 60 * 60 * 1000
+);
+
+const depositQuery = query(
+  collection(db, "deposits"),
+  where("uid", "==", user.uid)
+);
+
+const depositSnap = await getDocs(depositQuery);
+// 🚫 CHECK: PENDING DEPOSIT EXISTS
+let pendingDeposit = false;
+
+depositSnap.forEach(d => {
+  if (d.data().status === "pending") {
+    pendingDeposit = true;
+  }
+});
+
+if (pendingDeposit) {
+  alert("❌ Your previous deposit request is still pending.");
+  return;
+}
+
+let alreadyDeposited = false;
+
+depositSnap.forEach(d => {
+  const time = new Date(d.data().createdAt);
+  if (time > last24Hours) {
+    alreadyDeposited = true;
+  }
+});
+
+if (alreadyDeposited) {
+  alert("❌ You can only send ONE deposit request in 24 hours.");
+  return;
+}
   if (!user) {
     alert("User not logged in");
     return;
@@ -605,6 +644,45 @@ document.getElementById("confirmDeposit").onclick = async () => {
 /* ====== WITHDRAW REQUEST SAVE CODE ====== */
 document.getElementById("confirmWithdraw").onclick = async () => {
   const user = auth.currentUser;
+  // ⏳ CHECK: 24 HOURS WITHDRAW LIMIT
+const now = new Date();
+const last24Hours = new Date(
+  now.getTime() - 24 * 60 * 60 * 1000
+);
+
+const withdrawQuery = query(
+  collection(db, "withdraws"),
+  where("uid", "==", user.uid)
+);
+
+const withdrawSnap = await getDocs(withdrawQuery);
+// 🚫 CHECK: PENDING WITHDRAW EXISTS
+let pendingWithdraw = false;
+
+withdrawSnap.forEach(d => {
+  if (d.data().status === "pending") {
+    pendingWithdraw = true;
+  }
+});
+
+if (pendingWithdraw) {
+  alert("❌ Your previous withdrawal request is still pending.");
+  return;
+}
+
+let alreadyWithdrawn = false;
+
+withdrawSnap.forEach(d => {
+  const time = new Date(d.data().createdAt);
+  if (time > last24Hours) {
+    alreadyWithdrawn = true;
+  }
+});
+
+if (alreadyWithdrawn) {
+  alert("❌ You can only request ONE withdrawal in 24 hours.");
+  return;
+}
   if (!user) {
     alert("User not logged in");
     return;
