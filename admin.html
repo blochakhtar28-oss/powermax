@@ -134,8 +134,9 @@ if (searchValue && !String(data.senderNumber).includes(searchValue)) {
     box.innerHTML += `
       <div class="item" id="dep-${d.id}">
         <b>User ID:</b> ${data.uid}<br>
-        <b>Wallet Owner Name:</b> ${data.senderName}<br>
-        <b>Wallet Number:</b> ${data.senderNumber}<br>
+        <b>Payment Method:</b> ${data.walletType === "jazz" ? "JazzCash" : "EasyPaisa"}<br>
+<b>Sender Wallet Name:</b> ${data.senderName}<br>
+<b>Sender Wallet Number:</b> ${data.senderNumber}<br>
         <b>Amount:</b> ${data.amount} PTS<br><br>
 
         <button class="approve"
