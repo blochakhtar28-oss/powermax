@@ -172,8 +172,9 @@ async function loadWithdraws(){
     box.innerHTML += `
       <div class="item" id="with-${d.id}">
         <b>User ID:</b> ${data.uid}<br>
-        <b>Wallet Name:</b> ${data.walletName}<br>
-        <b>Wallet Number:</b> ${data.walletNumber}<br>
+        <b>Withdraw Method:</b> ${data.method === "jazz" ? "JazzCash" : "EasyPaisa"}<br>
+<b>Account Holder Name:</b> ${data.walletName}<br>
+<b>Account Number:</b> ${data.walletNumber}<br>
         <b>Amount:</b> ${data.amount} PTS<br><br>
 
         <button class="approve"
