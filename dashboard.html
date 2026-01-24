@@ -20,54 +20,14 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
 .btn-active{background:#e8eef6}
 .btn-on{background:#00c853;color:#fff}
 
-/* ===== FIXED PLAN COLORS (FINAL) ===== */
-
-.p50{
-  background:linear-gradient(135deg,#16a34a,#22c55e);
-  color:#ffffff;
-}
-
-.p100{
-  background:linear-gradient(135deg,#f59e0b,#fbbf24);
-  color:#1f2937;
-}
-
-.p300{
-  background:linear-gradient(135deg,#7c3aed,#a78bfa);
-  color:#ffffff;
-}
-
-.p500{
-  background:linear-gradient(135deg,#0284c7,#38bdf8);
-  color:#ffffff;
-}
-
-.p1000{
-  background:linear-gradient(135deg,#4f46e5,#818cf8);
-  color:#ffffff;
-}
-
-.p2000{
-  background:linear-gradient(135deg,#db2777,#fb7185);
-  color:#ffffff;
-}
-
-.p3000{
-  background:linear-gradient(135deg,#0f766e,#2dd4bf);
-  color:#ffffff;
-}
-
-.p5000{
-  background:linear-gradient(135deg,#374151,#6b7280);
-  color:#ffffff;
-}
-
-/* Text visibility fix */
-.plan div,
-.plan small{
-  color:inherit;
-  font-weight:600;
-}
+.p50 div, .p50 div small { color: #e6f4ea; }      /* Text on Green background */
+.p100 div, .p100 div small { color: #fff9db; }    /* Text on Yellow background */
+.p300 div, .p300 div small { color: #e9d7ff; }    /* Text on Purple background */
+.p500 div, .p500 div small { color: #d0f0ff; }    /* Text on Blue background */
+.p1000 div, .p1000 div small { color: #e3d7ff; }  /* Text on Lavender background */
+.p2000 div, .p2000 div small { color: #ffd6e0; }  /* Text on Pink background */
+.p3000 div, .p3000 div small { color: #c3f4f0; }  /* Text on Mint background */
+.p5000 div, .p5000 div small { color: #d9dce2; }  /* Text on Gray background */
 /* ===== HISTORY / REFER COMMON POPUP UI ===== */
 .history-box{
   background:#fff;
@@ -470,7 +430,8 @@ import {
   query,
   where,
   getDocs,
-  addDoc   // 👈 ADD THIS
+  addDoc,
+  runTransaction
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -914,9 +875,13 @@ if (balance < plantPts) {
   alert("Low Balance");
   return;
 }
-// 💸 CUT USER BALANCE
-await updateDoc(doc(db, "users", user.uid), {
-  balance: increment(-plantPts)
+// 🔒 ATOMIC BALANCE UPDATE (CUT + 30% SELF COMMISSION)
+await runTransaction(db, async (tx) => {
+  const buyerRef = doc(db, "users", user.uid);
+
+  tx.update(buyerRef, {
+    balance: increment(-plantPts + selfCommission)
+  });
 });
 
   // ✅ Save plant
@@ -938,14 +903,11 @@ await updateDoc(doc(db, "users", user.uid), {
 const DIRECT_COMMISSION = 30;
 const selfCommission = plantPts * (DIRECT_COMMISSION / 100);
 
-await updateDoc(doc(db, "users", user.uid), {
-  balance: increment(selfCommission)
-});
-// 🔹 LEVEL 1 – DIRECT COMMISSION LOG
+// 📝 SELF COMMISSION LOG (30%)
 await addDoc(
   collection(db, "users", user.uid, "directCommissions"),
   {
-    fromUser: user.uid,
+    type: "SELF_COMMISSION",
     amount: selfCommission,
     plan: planName,
     createdAt: new Date().toISOString()
@@ -973,17 +935,49 @@ if (userSnap.exists()) {
 
     for (const refDoc of qsnap.docs) {
       // referrer commission = based on HIS active plan
-      const refCommission = plantPts * (commission / 100);
+      // 🔹 REFERRER KA ACTIVE PLAN NIKALO
+const refPlantRef = doc(db, "users", refDoc.id, "plants", "active");
+const refPlantSnap = await getDoc(refPlantRef);
 
-      await updateDoc(doc(db, "users", refDoc.id), {
-        balance: increment(refCommission)
-      });
-      // 📝 LOG INDIRECT COMMISSION (for Refer & Earn UI)
+if (!refPlantSnap.exists()) {
+  console.log("Referrer ka koi active plan nahi hai");
+  continue;
+}
+
+const refPlanCommission = refPlantSnap.data().commission;
+
+// 🔹 AB COMMISSION CALCULATE KARO (RULE KE MUTABIQ)
+const refCommission = plantPts * (refPlanCommission / 100);
+
+      // 🔒 ATOMIC REFERRAL COMMISSION ADD
+await runTransaction(db, async (tx) => {
+  const referrerRef = doc(db, "users", refDoc.id);
+
+  tx.update(referrerRef, {
+    balance: increment(refCommission)
+  });
+});
+// 🔹 REFERRAL COMMISSION LOG (Level 1)
+const refUserPlantRef = doc(db, "users", refDoc.id, "plants", "active");
+const refPlantSnap = await getDoc(refUserPlantRef);
+
+let refActiveCommission = 0;
+if(refPlantSnap.exists()){
+  refActiveCommission = refPlantSnap.data().commission || 0;
+}
+
+const calculatedRefCommission = plantPts * (refActiveCommission / 100);
+
+await updateDoc(doc(db, "users", refDoc.id), {
+  balance: increment(calculatedRefCommission)
+});
+
 await addDoc(
   collection(db, "users", refDoc.id, "indirectCommissions"),
   {
+    type: "REF_COMMISSION",
     fromUser: user.uid,
-    amount: refCommission,
+    amount: calculatedRefCommission,
     plan: planName,
     createdAt: new Date().toISOString()
   }
@@ -1023,24 +1017,18 @@ window.logout = async function () {
 /* OPEN REFER POPUP */
 window.openRefer = () => {
   document.getElementById("referralModal").style.display = "flex";
+
   (async () => {
-  const user = auth.currentUser;
-  if (!user) return;
+    const user = auth.currentUser;
+    if (!user) return;
 
-  /* ======================
-     DIRECT COMMISSIONS
-  ====================== */
-  const directBox = document.getElementById("directCommissionBox");
-  directBox.innerHTML = "Loading...";
+    // 🔹 DIRECT COMMISSIONS (Level 1)
+    const directBox = document.getElementById("directCommissionBox");
+    const directSnap = await getDocs(
+      collection(db, "users", user.uid, "directCommissions")
+    );
 
-  const directSnap = await getDocs(
-    collection(db, "users", user.uid, "directCommissions")
-  );
-
-  if (directSnap.empty) {
-    directBox.innerHTML = "No direct commissions yet.";
-  } else {
-    directBox.innerHTML = "";
+    directBox.innerHTML = directSnap.empty ? "No direct commissions yet." : "";
     directSnap.forEach(d => {
       const data = d.data();
       directBox.innerHTML += `
@@ -1051,39 +1039,42 @@ window.openRefer = () => {
         </div>
       `;
     });
-  }
 
-  /* ======================
-     INDIRECT COMMISSIONS
-  ====================== */
-  const indirectBox = document.querySelector(
-  "#directCommissionBox"
-).parentElement.querySelectorAll(".level-box")[1];
-  indirectBox.innerHTML = "Loading...";
+    // 🔹 INDIRECT COMMISSIONS (Level 2)
+    const indirectBox = document.getElementById("indirectCommissionBox");
+    const indirectSnap = await getDocs(
+      collection(db, "users", user.uid, "indirectCommissions")
+    );
 
-  const indirectSnap = await getDocs(
-    collection(db, "users", user.uid, "indirectCommissions")
-  );
-
-  if (indirectSnap.empty) {
-    indirectBox.innerHTML = "No referral earnings yet.";
-  } else {
-    indirectBox.innerHTML = "";
+    indirectBox.innerHTML = indirectSnap.empty ? "No referral earnings yet." : "";
     indirectSnap.forEach(d => {
       const data = d.data();
-      indirectBox.innerHTML += `
-        <div class="history-item">
-          <b>${data.amount} PTS</b><br>
-          <small>From User: ${data.fromUser}</small><br>
-          <small>${data.plan}</small><br>
-          <small>${new Date(data.createdAt).toLocaleString()}</small>
-        </div>
-      `;
+      if (data.type === "REF_COMMISSION_L2") {
+        indirectBox.innerHTML += `
+          <div class="history-item">
+            <b>${data.amount} PTS</b><br>
+            <small>From User: ${data.fromUser}</small><br>
+            <small>${data.plan}</small><br>
+            <small>${new Date(data.createdAt).toLocaleString()}</small>
+          </div>
+        `;
+      }
     });
-  }
-})();
-};
+  })();
 
+  // 🔹 CLOSE REFER
+  document.getElementById("closeReferral").onclick = () => {
+    document.getElementById("referralModal").style.display = "none";
+  };
+
+  // 🔹 COPY REF LINK
+  document.getElementById("copyReferral").onclick = function () {
+    const input = document.getElementById("refLinkInput");
+    navigator.clipboard.writeText(input.value);
+    this.innerText = "Copied ✓";
+    setTimeout(() => this.innerText = "Copy", 1000);
+  };
+};
 /* CLOSE REFER */
 document.getElementById("closeReferral").onclick = () => {
   document.getElementById("referralModal").style.display = "none";
