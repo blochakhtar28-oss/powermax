@@ -1,4 +1,4 @@
-   <!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -6,124 +6,123 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-*{box-sizing:border-box;font-family:"Segoe UI",Arial,sans-serif;margin:0;padding:0}
-body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-content:center;padding:20px;color:#1f2d3d}
-.container{width:100%;max-width:420px}
-.header{text-align:center;font-size:24px;font-weight:700;margin-bottom:14px;color:#0a66ff}
-
-.user-box{background:#fff;border-radius:14px;padding:14px;text-align:center;box-shadow:0 8px 20px rgba(0,0,0,.06);margin-bottom:18px;font-size:14px}
-.user-box div{margin:4px 0}
-
-.plan{display:flex;justify-content:space-between;align-items:center;padding:14px;border-radius:14px;margin-bottom:12px;box-shadow:0 6px 16px rgba(0,0,0,.06)}
-.plan small{display:block;font-size:12px;opacity:.8}
-.plan button{padding:8px 16px;border:none;border-radius:22px;cursor:pointer;font-weight:600}
-.btn-active{background:#e8eef6}
-.btn-on{background:#00c853;color:#fff}
-
-/* ===== PLANT TEXT – UI MATCHED (CLEAN & PREMIUM) ===== */
-
-/* 50 PTS – Green */
-.green h3,
-.green p{
-  color:#f0fdf4;
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
 }
 
-/* 100 PTS – Yellow */
-.yellow h3,
-.yellow p{
-  color:#1f2937;   /* dark text – yellow UI rule */
-}
-
-/* 300 PTS – Purple */
-.purple h3,
-.purple p{
-  color:#faf5ff;
-}
-
-/* 500 PTS – Blue */
-.blue h3,
-.blue p{
-  color:#f0f9ff;
-}
-
-/* 1000 PTS – Lavender */
-.lavender h3,
-.lavender p{
-  color:#fdf4ff;
-}
-
-/* 2000 PTS – Pink */
-.pink h3,
-.pink p{
-  color:#fff1f2;
-}
-
-/* 3000 PTS – Mint */
-.mint h3,
-.mint p{
-  color:#ecfeff;
-}
-
-/* 5000 PTS – Gray */
-.gray h3,
-.gray p{
+/* ===== BODY ===== */
+body{
+  background:linear-gradient(180deg,#020617,#0b1224,#020617);
   color:#f8fafc;
 }
-/* ===== HISTORY / REFER COMMON POPUP UI ===== */
-.history-box{
-  background:#fff;
-  width:90%;
-  max-width:360px;
+
+/* ===== CONTAINER ===== */
+.container{
+  max-width:420px;
+  margin:auto;
+  padding:20px 14px 40px;
+}
+
+/* ===== TITLE ===== */
+.dash-title{
+  text-align:center;
+  font-size:24px;
+  font-weight:800;
+  color:#38bdf8;
+  margin-bottom:16px;
+}
+
+/* ===== USER CARD ===== */
+.user-card{
+  background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.1);
   border-radius:18px;
   padding:16px;
-}
-.history-box h3{
   text-align:center;
-  color:#0a66ff;
-  margin-bottom:8px;
+  margin-bottom:18px;
 }
-.history-item{
-  background:#f1f5f9;
-  border-radius:12px;
-  padding:10px;
+
+.user-card p{
+  margin:6px 0;
+  font-size:14px;
+  color:#e5e7eb;
+}
+
+/* ===== PLANT CARD ===== */
+.plant{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:16px;
+  border-radius:16px;
+  margin-bottom:12px;
+}
+
+.plant h3{
+  font-size:16px;
+  font-weight:700;
+  margin-bottom:4px;
+}
+
+.plant p{
   font-size:13px;
-  margin-bottom:8px;
+  opacity:0.9;
 }
-.history-status-pending{color:#ca8a04;font-weight:700}
-.history-status-approved{color:#16a34a;font-weight:700}
-.history-status-cancel{color:#dc2626;font-weight:700}
-.close-btn{
-  margin-top:10px;
-  width:100%;
-  padding:10px;
+
+/* ===== ACTIVATE BUTTON ===== */
+.activate{
+  background:rgba(255,255,255,0.25);
   border:none;
-  border-radius:22px;
-  background:#eee;
-  font-weight:600;
+  padding:8px 16px;
+  border-radius:20px;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
 }
 
-.active-box{display:none;background:#fff;border-radius:14px;padding:14px;margin-top:14px;box-shadow:0 6px 16px rgba(0,0,0,.08);font-size:14px}
-.active-box h3{text-align:center;margin-bottom:10px;color:#0a66ff}
+/* ===== PLANT COLORS ===== */
+.green{background:linear-gradient(135deg,#16a34a,#22c55e);}
+.yellow{background:linear-gradient(135deg,#ca8a04,#facc15);}
+.purple{background:linear-gradient(135deg,#7c3aed,#a855f7);}
+.blue{background:linear-gradient(135deg,#0284c7,#38bdf8);}
+.lavender{background:linear-gradient(135deg,#6d28d9,#c084fc);}
+.pink{background:linear-gradient(135deg,#be185d,#f472b6);}
+.mint{background:linear-gradient(135deg,#0f766e,#2dd4bf);}
+.gray{background:linear-gradient(135deg,#334155,#64748b);}
 
-.actions{margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.actions button{padding:12px;border:none;border-radius:26px;font-weight:600;color:#fff;cursor:pointer}
-.refer{background:#6a11cb}
-.deposit{background:#11998e}
-.withdraw{background:#ff512f}
-.support{background:#25d366}
+/* ===== BUTTON ROW ===== */
+.btn-row{
+  display:flex;
+  gap:12px;
+  margin-top:14px;
+}
 
-.logout{margin-top:18px;width:100%;padding:12px;border:none;border-radius:26px;background:#ff4b2b;color:#fff;font-weight:600;cursor:pointer}
+/* ===== BUTTON ===== */
+.btn{
+  flex:1;
+  padding:14px;
+  border-radius:16px;
+  border:none;
+  font-size:15px;
+  font-weight:700;
+  cursor:pointer;
+}
 
-/* POPUP */
-.popup{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);justify-content:center;align-items:center;z-index:1000}
-.popup-box{background:#fff;width:90%;max-width:400px;border-radius:20px;padding:18px}
-.popup-box h3{text-align:center}
-.popup-box small{text-align:center;display:block;color:#777;margin-bottom:10px}
-.popup-box label{font-size:13px;font-weight:600;margin-top:10px;display:block}
-.popup-box input,.popup-box select{width:100%;padding:10px;margin-top:6px;border-radius:10px;border:1px solid #ccc}
-.popup-actions{display:flex;gap:10px;margin-top:16px}
-.confirm{flex:1;background:#ff512f;color:#fff;border:none;padding:12px;border-radius:25px}
-.cancel{flex:1;background:#eee;border:none;padding:12px;border-radius:25px}
+/* ===== BUTTON COLORS ===== */
+.purple-btn{background:#a855f7;color:#fff;}
+.teal-btn{background:#2dd4bf;color:#020617;}
+.orange-btn{background:#fb923c;color:#020617;}
+.green-btn{background:#22c55e;color:#020617;}
+.red-btn{background:#f43f5e;color:#fff;}
+
+/* ===== FULL ===== */
+.full{
+  width:100%;
+  margin-top:12px;
+}
 /* ===== REFERRAL MODAL ===== */
 .ref-modal{
   position:fixed;
@@ -134,24 +133,46 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
   align-items:center;
   z-index:999;
 }
+
 .ref-box{
-  background:#fff;
+  background:#ffffff;
   width:92%;
   max-width:380px;
   border-radius:18px;
   padding:20px;
   color:#020617;
 }
-.ref-title{font-size:18px;font-weight:800;color:#2563eb}
-.ref-sub{font-size:13px;margin:6px 0 12px;color:#475569}
-.ref-label{font-size:13px;font-weight:700}
-.ref-link{display:flex;gap:8px;margin:8px 0 14px}
+
+.ref-title{
+  font-size:18px;
+  font-weight:800;
+  color:#2563eb;
+}
+
+.ref-sub{
+  font-size:13px;
+  margin:6px 0 12px;
+  color:#475569;
+}
+
+.ref-label{
+  font-size:13px;
+  font-weight:700;
+}
+
+.ref-link{
+  display:flex;
+  gap:8px;
+  margin:8px 0 14px;
+}
+
 .ref-link input{
   flex:1;
   padding:8px;
   border-radius:10px;
   border:1px solid #cbd5f5;
 }
+
 .copy-btn{
   background:#22c55e;
   border:none;
@@ -160,9 +181,15 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
   border-radius:10px;
   font-weight:700;
 }
-.level{margin-top:12px;font-size:14px}
-.l1{color:#16a34a}
-.l2{color:#dc2626}
+
+.level{
+  margin-top:12px;
+  font-size:14px;
+}
+
+.l1{color:#16a34a;}
+.l2{color:#dc2626;}
+
 .level-box{
   background:#ecfdf5;
   border-radius:12px;
@@ -171,6 +198,7 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
   font-size:13px;
   margin-top:6px;
 }
+
 .close-ref{
   margin-top:16px;
   width:100%;
@@ -190,7 +218,18 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
   align-items:center;
   z-index:999;
 }
-
+.status-btn {
+  background: #2563eb; /* نیلا بٹن */
+  color: #fff;
+  border: none;
+  padding: 8px 16px; /* مناسب سائز */
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 12px; /* Deposit Chips کے اوپر جگہ */
+  display: inline-block;
+}
 .dep-box{
   background:#ffffff;
   width:92%;
@@ -262,40 +301,142 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
 </head>
 
 <body>
+
 <div class="container">
 
-<div class="header">⚡ PowerMax Dashboard ⚡</div>
+<h2 class="dash-title">⚡ PowerMax Dashboard ⚡</h2>
 
-<div class="user-box">
-  <div><b>User ID:</b> <span id="userId">Loading...</span></div>
-  <div><b>Balance:</b> <span id="userBalance">0</span> PTS</div>
-  <div id="useremail">Loading...</div>
-  <div><b>Referred By:</b> <span id="referredBy">None</span></div>
+<!-- USER INFO -->
+<div class="user-card">
+  <p><b>User ID:</b> PMX12345</p>
+  <p><b>Balance:</b> 0 PTS</p>
+  <p><b>Name:</b> John Doe</p>  
 </div>
 
-<!-- ALL PTS PLANTS -->
-<div class="plan p50"><div>50 PTS Plant <small>Commission 40%</small></div><button class="btn-active" onclick="activatePlan('50 PTS',40,this)">Activate</button></div>
-<div class="plan p100"><div>100 PTS Plant <small>Commission 45%</small></div><button class="btn-active" onclick="activatePlan('100 PTS',45,this)">Activate</button></div>
-<div class="plan p300"><div>300 PTS Plant <small>Commission 50%</small></div><button class="btn-active" onclick="activatePlan('300 PTS',50,this)">Activate</button></div>
-<div class="plan p500"><div>500 PTS Plant <small>Commission 60%</small></div><button class="btn-active" onclick="activatePlan('500 PTS',60,this)">Activate</button></div>
-<div class="plan p1000"><div>1000 PTS Plant <small>Commission 60%</small></div><button class="btn-active" onclick="activatePlan('1000 PTS',60,this)">Activate</button></div>
-<div class="plan p2000"><div>2000 PTS Plant <small>Commission 60%</small></div><button class="btn-active" onclick="activatePlan('2000 PTS',60,this)">Activate</button></div>
-<div class="plan p3000"><div>3000 PTS Plant <small>Commission 60%</small></div><button class="btn-active" onclick="activatePlan('3000 PTS',60,this)">Activate</button></div>
-<div class="plan p5000"><div>5000 PTS Plant <small>Commission 60%</small></div><button class="btn-active" onclick="activatePlan('5000 PTS',60,this)">Activate</button></div>
-
-<div class="active-box" id="activeBox"></div>
-
-<div class="actions">
-  <button class="refer" onclick="openRefer()">Refer & Earn</button>
-  <button class="deposit" id="openDeposit">Deposit</button>
-  <button class="withdraw" onclick="openWithdraw()">Withdraw</button>
-  <button class="support" onclick="openWhatsAppSupport()">
-  WhatsApp Support
-</button>
+<!-- PLANTS -->
+<div class="plant green">
+  <div>
+    <h3>50 PTS Plant</h3>
+    <p>Commission 90%</p>
+  </div>
+  <button class="activate">Activate</button>
 </div>
 
-<button class="logout" id="openHistory">History</button>
-<button class="logout" onclick="logout()">Logout</button>
+<div class="plant yellow">
+  <div>
+    <h3>100 PTS Plant</h3>
+    <p>Commission 90%</p>
+  </div>
+  <button class="activate">Activate</button>
+</div>
+
+<div class="plant purple">
+  <div>
+    <h3>300 PTS Plant</h3>
+    <p>Commission 90%</p>
+  </div>
+  <button class="activate">Activate</button>
+</div>
+
+<div class="plant blue">
+  <div>
+    <h3>500 PTS Plant</h3>
+    <p>Commission 90%</p>
+  </div>
+  <button class="activate">Activate</button>
+</div>
+
+<div class="plant lavender">
+  <div>
+    <h3>1000 PTS Plant</h3>
+    <p>Commission 90%</p>
+  </div>
+  <button class="activate">Activate</button>
+</div>
+
+<div class="plant pink">
+  <div>
+    <h3>2000 PTS Plant</h3>
+    <p>Commission 90%</p>
+  </div>
+  <button class="activate">Activate</button>
+</div>
+
+<div class="plant mint">
+  <div>
+    <h3>3000 PTS Plant</h3>
+    <p>Commission 90%</p>
+  </div>
+  <button class="activate">Activate</button>
+</div>
+
+<div class="plant gray">
+  <div>
+    <h3>5000 PTS Plant</h3>
+    <p>Commission 90%</p>
+  </div>
+  <button class="activate">Activate</button>
+</div>
+
+<!-- ACTION BUTTONS -->
+<div class="btn-row">
+  <button class="btn purple-btn" id="openReferral">Refer & Earn</button>
+  <button class="btn teal-btn" id="openDeposit">Deposit</button>
+</div>
+
+<div class="btn-row">
+  <button class="btn orange-btn" id="openWithdraw">Withdraw</button>
+  <button class="btn teal-btn" id="openHistory">History</button>
+</div>
+
+<button class="btn green-btn full">WhatsApp Support</button>
+<button class="btn red-btn full">Logout</button>
+
+</div>
+<!-- ===== HISTORY POPUP ===== -->
+<div id="historyModal" class="dep-modal">
+  <div class="dep-box">
+<h3 class="dep-title">📜 Commission History</h3>
+    <button id="closeHistory" class="close-ref">Close</button>
+
+  </div>
+</div>
+<!-- ===== HISTORY POPUP ===== -->
+<div id="historyModal" class="dep-modal">
+  <div class="dep-box">
+
+    <h3 class="dep-title">📜 Transaction History</h3>
+
+    <!-- PENDING -->
+    <div class="level-box" style="margin-bottom:10px;">
+      <b>Status:</b> <span style="color:#ca8a04;">Pending</span><br>
+      <b>Type:</b> Deposit<br>
+      <b>Amount:</b> 300 PTS<br>
+      <b>Time:</b> 2026-01-11 03:45 PM
+    </div>
+
+    <!-- APPROVED -->
+    <div class="level-box" style="margin-bottom:10px;">
+      <b>Status:</b> <span style="color:#16a34a;">Approved</span><br>
+      <b>Type:</b> Withdraw<br>
+      <b>Amount:</b> 500 PTS<br>
+      <b>Time:</b> 2026-01-10 06:20 PM
+    </div>
+
+    <!-- CANCELED -->
+    <div class="level-box">
+      <b>Status:</b> <span style="color:#dc2626;">Canceled</span><br>
+      <b>Type:</b> Withdraw<br>
+      <b>Amount:</b> 200 PTS<br>
+      <b>Time:</b> 2026-01-09 01:10 PM
+    </div>
+
+    <button id="closeHistory" class="cancel-btn" style="margin-top:14px;">
+      Close
+    </button>
+
+  </div>
+</div>
 <!-- ===== REFERRAL POPUP ===== -->
 <div id="referralModal" class="ref-modal">
   <div class="ref-box">
@@ -305,101 +446,18 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
 
     <label class="ref-label">Your Referral Link</label>
     <div class="ref-link">
-      <input id="refLinkInput" type="text" value="REF_LINK_HERE" readonly>
+      <input type="text" value="https://my-dears-66cad.web.app/?ref=PD1jp" readonly>
       <button class="copy-btn" id="copyReferral">Copy</button>
     </div>
 
-    <h4 class="level l1">Level 1 Team</h4>
-    <div class="level-box" id="directCommissionBox">
-  No direct commissions yet.
-</div>
-
-    <h4 class="level l2">Level 2 Team</h4>
-    <div class="level-box" id="indirectCommissionBox">No members yet.</div>
-
     <button id="closeReferral" class="close-ref">Close</button>
-
-  </div>
-</div>
-<!-- ===== HISTORY POPUP ===== -->
-<div id="historyPopup" class="popup">
-  <div class="history-box">
-
-    <h3>📜 Transaction History</h3>
-
-    <div id="historyList">Loading...</div>
-      <b>Deposit:</b> 500 PTS<br>
-      <span class="history-status-approved">Approved</span><br>
-      <small>02 Jan 2026, 04:20 PM</small>
-    </div>
-
-    <div class="history-item">
-      <b>Withdraw:</b> 300 PTS<br>
-      <span class="history-status-pending">Pending</span><br>
-      <small>01 Jan 2026, 01:10 PM</small>
-    </div>
-
-    <div class="history-item">
-      <b>Withdraw:</b> 200 PTS<br>
-      <span class="history-status-cancel">Canceled</span><br>
-      <small>31 Dec 2025, 09:45 PM</small>
-    </div>
-
-    <button class="close-btn" onclick="document.getElementById('historyPopup').style.display='none'">
-      Close
-    </button>
-
-  </div>
-</div>
-</div>
-<!-- ===== WITHDRAW POPUP ===== -->
-<div id="withdrawModal" class="dep-modal">
-  <div class="dep-box">
-
-    <h3 class="dep-title">💸 Withdraw PTS</h3>
-
-    <div class="dep-field">
-      <small style="color:#dc2626;font-weight:700">
-        Minimum withdrawal: 10 PTS
-      </small>
-    </div>
-
-    <div class="dep-field">
-      <label>Amount (Min 10 PTS)</label>
-      <input id="withdrawAmount" type="number" min="10" placeholder="Enter amount">
-    </div>
-
-    <div class="dep-field">
-      <label>Withdraw Method</label>
-      <select id="withdrawMethod">
-        <option value="jazz">JazzCash</option>
-        <option value="easy">EasyPaisa</option>
-      </select>
-    </div>
-
-    <div class="dep-field">
-      <label>Wallet Owner Name</label>
-      <input id="withdrawName" type="text" placeholder="Enter your registered name">
-    </div>
-
-    <div class="dep-field">
-      <label>Account Number (JazzCash / EasyPaisa)</label>
-      <input id="withdrawAccount" type="text" maxlength="11" placeholder="Enter 11 digit account number">
-    </div>
-
-    <div class="dep-actions">
-      <button class="confirm-btn" id="confirmWithdraw">
-  Request Withdraw
-</button>
-      <button id="closeWithdraw" class="cancel-btn">Cancel</button>
-    </div>
 
   </div>
 </div>
 <!-- ===== DEPOSIT POPUP ===== -->
 <div id="depositModal" class="dep-modal">
   <div class="dep-box">
-
+    <button class="status-btn">Status</button>
     <h3 class="dep-title">💰 Deposit Chips</h3>
 
     <div class="dep-field">
@@ -443,405 +501,76 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
     </div>
 
     <div class="dep-actions">
-      <button class="confirm-btn" id="confirmDeposit">
-  Confirm Request
-</button>
+      <button class="confirm-btn">Confirm Request</button>
       <button id="closeDeposit" class="cancel-btn">Cancel</button>
     </div>
 
   </div>
 </div>
-<script type="module">
+<!-- ===== WITHDRAW POPUP ===== -->
+<div id="withdrawModal" class="dep-modal">
+  <div class="dep-box">
+<button class="status-btn">Status</button>
+    <h3 class="dep-title">💸 Withdraw Funds</h3>
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { 
-  getAuth,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    <p style="color:red;font-size:13px;font-weight:700;margin-bottom:10px;">
+      Minimum withdrawal: 10 pts
+    </p>
 
-import {
-  getFirestore,
-  doc,
-  setDoc,
-  getDoc,
-  updateDoc,
-  increment,
-  collection,
-  query,
-  where,
-  getDocs,
-  addDoc   // 👈 ADD THIS
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    <div class="dep-field">
+      <label>Amount (Min 10 pts)</label>
+      <input type="number" placeholder="Enter amount">
+    </div>
 
-const firebaseConfig = {
-     apiKey: "AIzaSyCzHxyLgn9ZKRwD1X0RuUSq3od6MWizieg",
-  authDomain: "powermax-fe149.firebaseapp.com",
-  projectId: "powermax-fe149"
+    <div class="dep-field">
+      <label>Withdraw Method</label>
+      <select>
+        <option>JazzCash</option>
+        <option>EasyPaisa</option>
+      </select>
+    </div>
+
+    <div class="dep-field">
+      <label>Wallet Owner Name</label>
+      <input type="text" placeholder="Enter your registered name">
+    </div>
+
+    <div class="dep-field">
+      <label>Account Number (JazzCash / EasyPaisa)</label>
+      <input type="text" placeholder="Enter 11 digit account number">
+    </div>
+
+    <div class="dep-actions">
+      <button class="confirm-btn">Request Withdraw</button>
+      <button id="closeWithdraw" class="cancel-btn">Cancel</button>
+    </div>
+
+  </div>
+</div>
+<script>
+document.getElementById("openReferral").onclick = function () {
+  document.getElementById("referralModal").style.display = "flex";
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-// 🔧 LOAD GLOBAL SETTINGS
-async function loadGlobalSettings() {
-  const ref = doc(db, "settings", "global");
-  const snap = await getDoc(ref);
-
-  if (!snap.exists()) {
-    console.error("❌ Global settings not found");
-    return null;
-  }
-
-  return snap.data();
-}
-const activeBox = document.getElementById("activeBox");
-// 🔒 ADMIN CHECK FUNCTION
-async function isAdmin(uid) {
-  const adminRef = doc(db, "admins", uid);
-  const adminSnap = await getDoc(adminRef);
-
-  if (!adminSnap.exists()) {
-    return false;
-  }
-
-  return adminSnap.data().role === "admin";
-}
-// 🔹 Save user in Firestore
-function generateRefCode() {
-  return "PMX" + Math.random().toString(36).substring(2,8).toUpperCase();
-}
-function getReferralCodeFromURL() {
-  const params = new URLSearchParams(window.location.search);
-  return params.get("ref"); // null if not exists
-}
-
-async function saveUser(u) {
-  const ref = doc(db, "users", u.uid);
-  const snap = await getDoc(ref);
-
-  if (!snap.exists()) {
-    const referredBy = getReferralCodeFromURL();
-
-await setDoc(ref, {
-  email: u.email,
-  balance: 0,
-  refCode: generateRefCode(),
-  referredBy: referredBy || null,
-  createdAt: new Date().toISOString()
-});
-  }
-}
-
-/* 🔐 USER CHECK */
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    location.href = "index.html";
-    return;
-  }
-
-  // 🔹 email show
-  document.getElementById("useremail").innerText = user.email;
-
-  // 🔹 pehle ensure user saved ho
-  await saveUser(user);
-  // 🔐 ADMIN CHECK (STEP 2)
-const admin = await isAdmin(user.uid);
-
-if (admin) {
-  console.log("✅ Admin logged in:", user.email);
-  // future: admin panel access
-} else {
-  console.log("👤 Normal user:", user.email);
-}
-// 🔒 Global admin flag
-window.IS_ADMIN = admin;
-
-  // 🔹 ab Firestore se real data load
-  const userRef = doc(db, "users", user.uid);
-  const snap = await getDoc(userRef);
-
-  if (snap.exists()) {
-    document.getElementById("userBalance").innerText =
-      snap.data().balance ?? 0;
-
-    document.getElementById("userId").innerText =
-      snap.data().refCode ?? "NO REF";
-      document.getElementById("referredBy").innerText =
-  snap.data().referredBy ?? "Direct / No Referrer";
-      const refCode = snap.data().refCode;
-const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, "");
-const referralLink = `${baseUrl}/index.html?ref=${refCode}`;
-document.getElementById("refLinkInput").value = referralLink;
-      const plantRef = doc(db, "users", user.uid, "plants", "active");
-  const plantSnap = await getDoc(plantRef);
-
-  if (plantSnap.exists()) {
-    const p = plantSnap.data();
-
-    activeBox.style.display = "block";
-    activeBox.innerHTML = `
-      <h3>Active PTS Plant Details</h3>
-      <b>Plan:</b> ${p.planName}<br>
-      <b>Commission:</b> ${p.commission}%<br><br>
-      <b>Activated:</b><br>${new Date(p.activatedAt).toLocaleString()}<br><br>
-      <b>Expiry:</b><br>${new Date(p.expiryAt).toLocaleString()}
-    `;
-    // 🔒 Keep active plan button GREEN permanently until expiry
-    document.querySelectorAll(".plan").forEach(planDiv => {
-      if (planDiv.innerText.includes(p.planName)) {
-        const btn = planDiv.querySelector("button");
-        btn.classList.remove("btn-active");
-        btn.classList.add("btn-on");
-      }
-    });
-  }
-  }
-});
-window.logout = async function () {
-  await signOut(auth);
-  location.href = "index.html";
+document.getElementById("closeReferral").onclick = function () {
+  document.getElementById("referralModal").style.display = "none";
 };
+/* ===== COPY REFERRAL LINK (FIXED) ===== */
+document.getElementById("copyReferral").onclick = function () {
+  const btn = this;
+  const input = document.querySelector(".ref-link input");
 
-/* ====== DEPOSIT REQUEST SAVE CODE ====== */
-document.getElementById("confirmDeposit").onclick = async () => {
-  const user = auth.currentUser;
-  // ⏳ CHECK: 24 HOURS DEPOSIT LIMIT
-const now = new Date();
-const last24Hours = new Date(
-  now.getTime() - 24 * 60 * 60 * 1000
-);
+  navigator.clipboard.writeText(input.value).then(() => {
+    btn.innerText = "Copied ✓";
 
-const depositQuery = query(
-  collection(db, "deposits"),
-  where("uid", "==", user.uid)
-);
-
-const depositSnap = await getDocs(depositQuery);
-
-let alreadyDeposited = false;
-
-depositSnap.forEach(d => {
-  const time = new Date(d.data().createdAt);
-  if (time > last24Hours) {
-    alreadyDeposited = true;
-  }
-});
-
-if (alreadyDeposited) {
-  alert("❌ You can only send ONE deposit request in 24 hours.");
-  return;
-}
-  if (!user) {
-    alert("User not logged in");
-    return;
-  }
-
-  const amountText =
-    document.querySelector("#depositModal select").value;
-  const amount = parseInt(amountText);
-
-  const walletType = document.getElementById("walletSelect").value;
-  const adminWallet = document.getElementById("walletNumber").value;
-
-  const senderName =
-    document.querySelectorAll("#depositModal input")[1].value;
-  const senderNumber =
-    document.querySelectorAll("#depositModal input")[2].value;
-
-  if (!senderName || !senderNumber) {
-    alert("Please fill all fields");
-    return;
-  }
-
-  await addDoc(collection(db, "deposits"), {
-    uid: user.uid,
-    email: user.email,
-    amount: amount,
-    walletType: walletType,
-    adminWallet: adminWallet,
-    senderName: senderName,
-    senderNumber: senderNumber,
-    status: "pending",
-    createdAt: new Date().toISOString()
+    setTimeout(() => {
+      btn.innerText = "Copy";
+    }, 1000);
   });
-
-  alert("Deposit request submitted");
-  document.getElementById("depositModal").style.display = "none";
 };
-/* ====== WITHDRAW REQUEST SAVE CODE ====== */
-document.getElementById("confirmWithdraw").onclick = async () => {
-  const user = auth.currentUser;
-  // ⏳ CHECK: 24 HOURS WITHDRAW LIMIT
-const now = new Date();
-const last24Hours = new Date(
-  now.getTime() - 24 * 60 * 60 * 1000
-);
+</script>
 
-const withdrawQuery = query(
-  collection(db, "withdraws"),
-  where("uid", "==", user.uid)
-);
-
-const withdrawSnap = await getDocs(withdrawQuery);
-
-let alreadyWithdrawn = false;
-
-withdrawSnap.forEach(d => {
-  const time = new Date(d.data().createdAt);
-  if (time > last24Hours) {
-    alreadyWithdrawn = true;
-  }
-});
-
-if (alreadyWithdrawn) {
-  alert("❌ You can only request ONE withdrawal in 24 hours.");
-  return;
-}
-  if (!user) {
-    alert("User not logged in");
-    return;
-  }
-
-  const amount = parseInt(
-    document.getElementById("withdrawAmount").value
-  );
-  const method = document.getElementById("withdrawMethod").value;
-  const name = document.getElementById("withdrawName").value;
-  const account = document.getElementById("withdrawAccount").value;
-
-  if (!amount || amount < 10) {
-    alert("Minimum withdrawal is 10 PTS");
-    return;
-  }
-
-  if (!name || !account) {
-    alert("Please fill all fields");
-    return;
-  }
-
-  const userRef = doc(db, "users", user.uid);
-  const snap = await getDoc(userRef);
-  const balance = snap.data().balance || 0;
-
-  if (balance < amount) {
-    alert("Insufficient balance");
-    return;
-  }
-
-  await addDoc(collection(db, "withdraws"), {
-    uid: user.uid,
-    amount: amount,
-    method: method,
-    walletName: name,
-    walletNumber: account,
-    status: "pending",
-    createdAt: new Date().toISOString()
-  });
-
-  alert("Withdraw request submitted");
-  document.getElementById("withdrawModal").style.display = "none";
-};
-async function loadHistory() {
-  const user = auth.currentUser;
-  if (!user) return;
-
-  const box = document.getElementById("historyList");
-  box.innerHTML = "Loading...";
-
-  let history = [];
-
-  // 🔹 Deposits
-  const depSnap = await getDocs(
-    query(
-      collection(db, "deposits"),
-      where("uid", "==", user.uid)
-    )
-  );
-
-  depSnap.forEach(d => {
-    history.push({
-      type: "Deposit",
-      amount: d.data().amount,
-      status: d.data().status,
-      time: d.data().createdAt
-    });
-  });
-
-  // 🔹 Withdraws
-  const withSnap = await getDocs(
-    query(
-      collection(db, "withdraws"),
-      where("uid", "==", user.uid)
-    )
-  );
-
-  withSnap.forEach(d => {
-    history.push({
-      type: "Withdraw",
-      amount: d.data().amount,
-      status: d.data().status,
-      time: d.data().createdAt
-    });
-  });
-
-  if (history.length === 0) {
-    box.innerHTML = "No transactions yet.";
-    return;
-  }
-
-  // 🔽 Sort by latest
-  history.sort((a, b) => new Date(b.time) - new Date(a.time));
-
-  box.innerHTML = "";
-
-  history.forEach(h => {
-    let statusClass = "history-status-pending";
-    if (h.status === "approved") statusClass = "history-status-approved";
-    if (h.status === "rejected") statusClass = "history-status-cancel";
-
-    box.innerHTML += `
-      <div class="history-item">
-        <b>${h.type}:</b> ${h.amount} PTS<br>
-        <span class="${statusClass}">
-          ${h.status.toUpperCase()}
-        </span><br>
-        <small>${new Date(h.time).toLocaleString()}</small>
-      </div>
-    `;
-  });
-}
-   
-window.openWhatsAppSupport = () => {
-  const user = auth.currentUser;
-
-  if (!user) {
-    alert("User not logged in");
-    return;
-  }
-
-  const name = user.email; 
-const uid = document.getElementById("userId").innerText;
-  const balance = document.getElementById("userBalance").innerText;
-
-  const message = `Hello PowerMax Support, I need assistance.
-
-*Account Details:*
-Name: ${name}
-UID: ${uid}
-Balance: ${balance} pts
-
-My Query is: `;
-
-  const phone = "923008775258"; // اپنا WhatsApp number
-  const url = "https://wa.me/" + phone + "?text=" + encodeURIComponent(message);
-
-  window.open(url, "_blank");
-};
-document.getElementById("openHistory").onclick = async () => {
-  document.getElementById("historyPopup").style.display = "flex";
-  await loadHistory();
-};
+<script>
 /* OPEN DEPOSIT */
 document.getElementById("openDeposit").onclick = function () {
   document.getElementById("depositModal").style.display = "flex";
@@ -850,16 +579,6 @@ document.getElementById("openDeposit").onclick = function () {
 /* CLOSE DEPOSIT */
 document.getElementById("closeDeposit").onclick = function () {
   document.getElementById("depositModal").style.display = "none";
-};
-
-/* OPEN WITHDRAW */
-window.openWithdraw = () => {
-  document.getElementById("withdrawModal").style.display = "flex";
-};
-
-/* CLOSE WITHDRAW */
-document.getElementById("closeWithdraw").onclick = () => {
-  document.getElementById("withdrawModal").style.display = "none";
 };
 
 /* AUTO CHANGE NUMBER */
@@ -872,233 +591,56 @@ document.getElementById("walletSelect").onchange = function () {
   }
 };
 
-/* COPY NUMBER */
-window.copyDepositNumber = function () {
+/* COPY NUMBER (REPEATABLE) */
+function copyDepositNumber(){
   const input = document.getElementById("walletNumber");
   input.select();
-  input.setSelectionRange(0, 99999);
+  input.setSelectionRange(0,99999);
   navigator.clipboard.writeText(input.value);
-};
-window.activatePlan = async (planName, commission, btn) => {
-  const user = auth.currentUser;
-  if (!user) {
-    alert("User not logged in");
-    return;
-  }
-
-  const plantRef = doc(db, "users", user.uid, "plants", "active");
-
-  // 🔒 Duplicate check
-  const existingPlantSnap = await getDoc(plantRef);
-  if (existingPlantSnap.exists()) {
-    const data = existingPlantSnap.data();
-    if (new Date(data.expiryAt) > new Date()) {
-      alert("Plant already active. Wait until expiry.");
-      return;
-    }
-  }
-
-  const start = new Date();
-  const expiry = new Date();
-  // 🔧 get expiry days from admin settings
-const settings = await loadGlobalSettings();
-const days = settings.planExpiryDays || 30;
-
-expiry.setDate(start.getDate() + days);
-  // 🔒 LOW BALANCE CHECK
-const plantPts = parseInt(planName.split(" ")[0]);
-
-const balanceSnap = await getDoc(doc(db, "users", user.uid));
-const balance = balanceSnap.data().balance || 0;
-
-if (balance < plantPts) {
-  alert("Low Balance");
-  return;
 }
-// 💸 CUT USER BALANCE
-await updateDoc(doc(db, "users", user.uid), {
-  balance: increment(-plantPts)
-});
+/* OPEN HISTORY */
+document.getElementById("openHistory").onclick = function () {
+  document.getElementById("historyModal").style.display = "flex";
+};
 
-  // ✅ Save plant
-  await setDoc(plantRef, {
-    planName,
-    commission,
-    activatedAt: start.toISOString(),
-    expiryAt: expiry.toISOString()
-  });
+/* CLOSE HISTORY */
+document.getElementById("closeHistory").onclick = function () {
+  document.getElementById("historyModal").style.display = "none";
+};
+/* OPEN WITHDRAW */
+document.querySelector(".orange-btn").onclick = function () {
+  document.getElementById("withdrawModal").style.display = "flex";
+};
 
-  // 🔥 COMMISSION LOGIC (FINAL — AS PER RULES)
+/* CLOSE WITHDRAW */
+document.getElementById("closeWithdraw").onclick = function () {
+  document.getElementById("withdrawModal").style.display = "none";
+};
+</script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+  const firebaseConfig = {
+    apiKey: "AIzaSyCzHxyLgn9ZKRwD1X0RuUSq3od6MWizieg",
+    authDomain: "powermax-fe149.firebaseapp.com",
+    projectId: "powermax-fe149",
+    storageBucket: "powermax-fe149.firebasestorage.app",
+    messagingSenderId: "4028356676",
+    appId: "1:4028356676:web:dce4027e9f215cf4178411"
+  };
 
-/* =========================
-   1️⃣ DIRECT COMMISSION (30%)
-   ONLY FOR THE USER
-========================= */
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
 
-const DIRECT_COMMISSION = 30;
-const selfCommission = plantPts * (DIRECT_COMMISSION / 100);
-
-await updateDoc(doc(db, "users", user.uid), {
-  balance: increment(selfCommission)
-});
-// 🔹 LEVEL 1 – DIRECT COMMISSION LOG
-await addDoc(
-  collection(db, "users", user.uid, "directCommissions"),
-  {
-    fromUser: user.uid,
-    amount: selfCommission,
-    plan: planName,
-    createdAt: new Date().toISOString()
-  }
-);
-
-/* =========================
-   2️⃣ REFERRAL COMMISSION
-   BASED ON REFERRER PLAN
-========================= */
-
-const userRef = doc(db, "users", user.uid);
-const userSnap = await getDoc(userRef);
-
-if (userSnap.exists()) {
-  const referredBy = userSnap.data().referredBy;
-
-  if (referredBy) {
-    const q = query(
-      collection(db, "users"),
-      where("refCode", "==", referredBy)
-    );
-
-    const qsnap = await getDocs(q);
-
-    for (const refDoc of qsnap.docs) {
-      // referrer commission = based on HIS active plan
-      const refCommission = plantPts * (commission / 100);
-
-      await updateDoc(doc(db, "users", refDoc.id), {
-        balance: increment(refCommission)
-      });
-      // 📝 LOG INDIRECT COMMISSION (for Refer & Earn UI)
-await addDoc(
-  collection(db, "users", refDoc.id, "indirectCommissions"),
-  {
-    fromUser: user.uid,
-    amount: refCommission,
-    plan: planName,
-    createdAt: new Date().toISOString()
-  }
-);
+  // 🔒 LOGIN CHECK
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      // login نہیں ہے → واپس index.html
+      window.location.href = "index.html";
     }
-  }
-}
-
-  // 🔄 UI update
-  document.querySelectorAll(".plan button").forEach(b => {
-    b.className = "btn-active";
-    b.innerText = "Activate";
   });
-
-  btn.className = "btn-on";
-  btn.innerText = "Activated";
-
-  activeBox.style.display = "block";
-  activeBox.innerHTML = `
-    <h3>Active PTS Plant Details</h3>
-    <b>Plan:</b> ${planName}<br>
-    <b>Commission:</b> ${commission}%<br><br>
-    <b>Activated:</b><br>${start.toLocaleString()}<br><br>
-        <b>Expiry:</b><br>${expiry.toLocaleString()}
-  `;
-};
-window.logout = async function () {
-  try {
-    await signOut(auth);
-    location.href = "index.html";
-  } catch (e) {
-    alert("Logout failed");
-    console.error(e);
-  }
-};
-
-/* OPEN REFER POPUP */
-window.openRefer = () => {
-  document.getElementById("referralModal").style.display = "flex";
-  (async () => {
-  const user = auth.currentUser;
-  if (!user) return;
-
-  /* ======================
-     DIRECT COMMISSIONS
-  ====================== */
-  const directBox = document.getElementById("directCommissionBox");
-  directBox.innerHTML = "Loading...";
-
-  const directSnap = await getDocs(
-    collection(db, "users", user.uid, "directCommissions")
-  );
-
-  if (directSnap.empty) {
-    directBox.innerHTML = "No direct commissions yet.";
-  } else {
-    directBox.innerHTML = "";
-    directSnap.forEach(d => {
-      const data = d.data();
-      directBox.innerHTML += `
-        <div class="history-item">
-          <b>${data.amount} PTS</b><br>
-          <small>${data.plan}</small><br>
-          <small>${new Date(data.createdAt).toLocaleString()}</small>
-        </div>
-      `;
-    });
-  }
-
-  /* ======================
-     INDIRECT COMMISSIONS
-  ====================== */
-  const indirectBox = document.querySelector(
-  "#directCommissionBox"
-).parentElement.querySelectorAll(".level-box")[1];
-  indirectBox.innerHTML = "Loading...";
-
-  const indirectSnap = await getDocs(
-    collection(db, "users", user.uid, "indirectCommissions")
-  );
-
-  if (indirectSnap.empty) {
-    indirectBox.innerHTML = "No referral earnings yet.";
-  } else {
-    indirectBox.innerHTML = "";
-    indirectSnap.forEach(d => {
-      const data = d.data();
-      indirectBox.innerHTML += `
-        <div class="history-item">
-          <b>${data.amount} PTS</b><br>
-          <small>From User: ${data.fromUser}</small><br>
-          <small>${data.plan}</small><br>
-          <small>${new Date(data.createdAt).toLocaleString()}</small>
-        </div>
-      `;
-    });
-  }
-})();
-};
-
-/* CLOSE REFER */
-document.getElementById("closeReferral").onclick = () => {
-  document.getElementById("referralModal").style.display = "none";
-};
-
-/* COPY REF LINK */
-document.getElementById("copyReferral").onclick = function () {
-  const input = document.getElementById("refLinkInput");
-  navigator.clipboard.writeText(input.value);
-  this.innerText = "Copied ✓";
-  setTimeout(() => this.innerText = "Copy", 1000);
-};
 </script>
 
 </body>
-  </html>
-    
+                   </html>
