@@ -167,34 +167,17 @@ body{
 </div>
 
 <!-- FIREBASE GOOGLE AUTH -->
-<script type="module">
-  // 🔗 REFERRAL LINK CAPTURE & STORE
-  (function () {
-    const params = new URLSearchParams(window.location.search);
-    const refCodeParam = params.get("ref");
+ <script type="module">
+  // 🔗 REF CODE READ
+const params = new URLSearchParams(window.location.search);
+const refCode = params.get("ref");
 
-    if (refCodeParam) {
-      // Agar user referral link se aaya hai to localStorage me save karo
-      localStorage.setItem("refBy", refCodeParam);
-    }
-  })();
-
-  // 🔹 FIREBASE SETUP
+// temporary store (signup ke baad use hoga)
+if (refCode) {
+  localStorage.setItem("refBy", refCode);
+}
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import {
-    getFirestore,
-    doc,
-    setDoc,
-    getDoc,
-    collection,
-    query,
-    where,
-    getDocs,
-    updateDoc,
-    increment,
-    serverTimestamp
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCzHxyLgn9ZKRwD1X0RuUSq3od6MWizieg",
@@ -208,68 +191,78 @@ body{
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
-  const db = getFirestore(app);
+  import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+  serverTimestamp,
+  collection,
+  query,
+  where,
+  getDocs,
+  updateDoc,
+  increment
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  // 🔹 Generate unique referral code
-  function generateRefCode() {
-    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    let code = "PMX";
-    for (let i = 0; i < 6; i++) {
-      code += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return code;
+const db = getFirestore(app);
+
+// 🔹 PMX + 6 random characters
+function generateRefCode() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let code = "PMX";
+  for (let i = 0; i < 6; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
   }
+  return code;
+}
 
-  // 🔹 GOOGLE LOGIN FUNCTION
   window.googleLogin = async function () {
-    try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
 
-      const userRef = doc(db, "users", user.uid);
-      const snap = await getDoc(userRef);
+    const userRef = doc(db, "users", user.uid);
+    const snap = await getDoc(userRef);
 
-      // 🔹 First time signup
-      if (!snap.exists()) {
-        const myRefCode = generateRefCode();
-        const referredBy = localStorage.getItem("refBy") || null;
+    // 🔹 first time signup
+    if (!snap.exists()) {
+      const myRefCode = generateRefCode();
+      const referredBy = localStorage.getItem("refBy") || null;
 
-        await setDoc(userRef, {
-          email: user.email,
-          uid: user.uid,
-          refCode: myRefCode,
-          referredBy: referredBy,
-          balance: 0,
-          level1Count: 0,
-          createdAt: serverTimestamp()
-        });
+      await setDoc(userRef, {
+        email: user.email,
+        uid: user.uid,
+        refCode: myRefCode,
+        referredBy: referredBy,
+        balance: 0,
+        level1Count: 0,
+        createdAt: serverTimestamp()
+      });
 
-        // 🔥 LEVEL 1 referral count
-        if (referredBy) {
-          const q = query(
-            collection(db, "users"),
-            where("refCode", "==", referredBy)
-          );
+      // 🔥 LEVEL 1 referral count (REAL)
+      if (referredBy) {
+        const q = query(
+          collection(db, "users"),
+          where("refCode", "==", referredBy)
+        );
 
-          const qsnap = await getDocs(q);
-          qsnap.forEach(async (docu) => {
-            await updateDoc(doc(db, "users", docu.id), {
-              level1Count: increment(1)
-            });
+        const qsnap = await getDocs(q);
+        qsnap.forEach(async (docu) => {
+          await updateDoc(doc(db, "users", docu.id), {
+            level1Count: increment(1)
           });
-        }
+        });
       }
-
-      // 🔹 Cleanup referral storage
-      localStorage.removeItem("refBy");
-
-      // 🔹 Redirect to dashboard
-      window.location.href = "dashboard.html";
-
-    } catch (err) {
-      alert(err.message);
     }
-  };
+
+    localStorage.removeItem("refBy");
+    window.location.href = "dashboard.html";
+
+  } catch (err) {
+    alert(err.message);
+  }
+};
 </script>
 
 </body>
