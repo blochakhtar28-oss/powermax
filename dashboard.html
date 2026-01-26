@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -446,9 +446,9 @@ body{
 
     <label class="ref-label">Your Referral Link</label>
     <div class="ref-link">
-      <input type="text" value="https://my-dears-66cad.web.app/?ref=PD1jp" readonly>
-      <button class="copy-btn" id="copyReferral">Copy</button>
-    </div>
+  <input type="text" id="refLinkInput" readonly>
+  <button class="copy-btn" id="copyReferral">Copy</button>
+</div>
 
     <button id="closeReferral" class="close-ref">Close</button>
 
@@ -555,21 +555,6 @@ document.getElementById("openReferral").onclick = function () {
 document.getElementById("closeReferral").onclick = function () {
   document.getElementById("referralModal").style.display = "none";
 };
-/* ===== COPY REFERRAL LINK (FIXED) ===== */
-document.getElementById("copyReferral").onclick = function () {
-  const btn = this;
-  const input = document.querySelector(".ref-link input");
-
-  navigator.clipboard.writeText(input.value).then(() => {
-    btn.innerText = "Copied ✓";
-
-    setTimeout(() => {
-      btn.innerText = "Copy";
-    }, 1000);
-  });
-};
-</script>
-
 <script>
 /* OPEN DEPOSIT */
 document.getElementById("openDeposit").onclick = function () {
@@ -651,6 +636,27 @@ document.getElementById("closeWithdraw").onclick = function () {
     }
 
     currentUser = user;
+    // ===== REAL REFERRAL LINK =====
+const refInput = document.getElementById("refLinkInput");
+const copyBtn = document.getElementById("copyReferral");
+
+const referralLink =
+  window.location.origin + "/index.html?ref=" + user.uid;
+
+if (refInput) {
+  refInput.value = referralLink;
+}
+
+if (copyBtn) {
+  copyBtn.onclick = () => {
+    navigator.clipboard.writeText(referralLink).then(() => {
+      copyBtn.innerText = "Copied ✓";
+      setTimeout(() => {
+        copyBtn.innerText = "Copy";
+      }, 1000);
+    });
+  };
+}
 
     document.getElementById("uidText").innerText = user.uid;
     document.getElementById("nameText").innerText =
@@ -733,4 +739,4 @@ document.getElementById("closeWithdraw").onclick = function () {
 </script>
 
 </body>
-</html>
+ </html>
