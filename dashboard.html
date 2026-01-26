@@ -664,9 +664,11 @@ document.getElementById("closeWithdraw").onclick = function () {
     document.getElementById("balanceText").innerText =
       userData.balance ?? 0;
 
-    // 🔗 REAL REFERRAL LINK
-    document.getElementById("refLinkInput").value =
-      ``${location.origin}/?ref=${user.uid}`;
+    // 🔗 REAL REFERRAL LINK (FIXED)
+const refCode = user.uid;
+const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, "");
+const referralLink = `${baseUrl}/index.html?ref=${refCode}`;
+document.getElementById("refLinkInput").value = referralLink;
 
     checkActivePlanUI(userData.activePlan);
   });
@@ -750,4 +752,4 @@ document.getElementById("closeWithdraw").onclick = function () {
 </script>
 
 </body>
-</html>
+ </html>
