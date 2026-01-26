@@ -617,7 +617,7 @@ document.getElementById("closeWithdraw").onclick = function () {
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 // ===== STEP-2: PLANT CLICK DETECTION =====
 const PLANT_AMOUNTS = [50,100,300,500,1000,2000,3000,5000];
 
@@ -717,4 +717,4 @@ alert(`✅ ${amount} PTS Plant Activated`);
 </script>
 
 </body>
-  </html>
+      </html>
