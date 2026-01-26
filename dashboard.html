@@ -662,12 +662,14 @@ userData = snap.data();
 document.getElementById("uidText").innerText = user.uid;
 document.getElementById("nameText").innerText = user.email.split("@")[0];
 
-// 🔗 REFERRAL LINK
-const refCode = user.uid;
-const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, "");
+// 🔗 REFERRAL LINK (FIXED & SAFE)
+const refCode = userData.refCode;
+const baseUrl =
+  window.location.origin +
+  window.location.pathname.replace(/\/[^\/]*$/, "");
+
 const referralLink = `${baseUrl}/index.html?ref=${refCode}`;
 document.getElementById("refLinkInput").value = referralLink;
-
 // 🔹 Update UI & buttons
 document.getElementById("balanceText").innerText = userData.balance ?? 0;
 checkActivePlanUI(userData.activePlan);
@@ -741,19 +743,25 @@ setTimeout(async () => {
           }
         });
 
-        // 💰 REFERRAL COMMISSION
-        if (uData.referredBy) {
-          const refRef = doc(db, "users", uData.referredBy);
-          const refSnap = await tx.get(refRef);
+        // 💰 REFERRAL COMMISSION (FIXED VIA refCode)
+if (uData.referredBy) {
+  const qSnap = await tx.get(
+    doc(db, "refCodes", uData.referredBy)
+  );
 
-          if (refSnap.exists()) {
-            const commission = amount * 0.9;
-            tx.update(refRef, {
-              balance: (refSnap.data().balance ?? 0) + commission
-            });
-          }
-        }
+  if (qSnap.exists()) {
+    const refUid = qSnap.data().uid;
+    const refUserRef = doc(db, "users", refUid);
+    const refUserSnap = await tx.get(refUserRef);
+
+    if (refUserSnap.exists()) {
+      const commission = amount * 0.9;
+      tx.update(refUserRef, {
+        balance: (refUserSnap.data().balance ?? 0) + commission
       });
+    }
+  }
+}
 
       alert("Plan activated successfully");
       location.reload();
@@ -762,4 +770,4 @@ setTimeout(async () => {
 </script>
 
 </body>
- </html>
+   </html>
