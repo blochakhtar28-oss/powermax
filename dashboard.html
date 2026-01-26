@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -308,10 +308,9 @@ body{
 
 <!-- USER INFO -->
 <div class="user-card">
-  <p><b>User ID:</b> <span id="uid">---</span></p>
-  <p><b>Email:</b> <span id="email">---</span></p>
-  <p><b>Name:</b> <span id="name">---</span></p>
-  <p><b>Balance:</b> <span id="balance">0</span> PTS</p>
+  <p><b>User ID:</b> PMX12345</p>
+  <p><b>Balance:</b> 0 PTS</p>
+  <p><b>Name:</b> John Doe</p>
 </div>
 
 <!-- PLANTS -->
@@ -636,33 +635,12 @@ document.getElementById("closeWithdraw").onclick = function () {
 
   // 🔒 LOGIN CHECK
   onAuthStateChanged(auth, (user) => {
-    if (user) {
-  // AUTH DATA
-  document.getElementById("uid").innerText = user.uid.slice(0, 8);
-  document.getElementById("email").innerText = user.email || "---";
-  document.getElementById("name").innerText = user.displayName || "No Name";
-
-  // FIRESTORE BALANCE
-  import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js")
-    .then(({ getFirestore, doc, getDoc }) => {
-      const db = getFirestore();
-      const userRef = doc(db, "users", user.uid);
-
-      getDoc(userRef).then((snap) => {
-        if (snap.exists()) {
-          document.getElementById("balance").innerText =
-            snap.data().balance ?? 0;
-        } else {
-          document.getElementById("balance").innerText = 0;
-        }
-      });
-    });
-
-} else {
-  window.location.href = "index.html";
-}
+    if (!user) {
+      // login نہیں ہے → واپس index.html
+      window.location.href = "index.html";
+    }
   });
 </script>
 
 </body>
-    </html>
+        </html>
