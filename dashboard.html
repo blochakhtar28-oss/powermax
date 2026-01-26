@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+here  <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -697,6 +697,19 @@ if (data.activePlant) {
     }
 
     const data = snap.data();
+    // ===== RESTORE ACTIVE PLANT UI AFTER REFRESH =====
+if (data.activePlant) {
+  const index = PLANT_AMOUNTS.indexOf(data.activePlant.amount);
+  if (index !== -1) {
+    const plantDiv = document.querySelectorAll(".plant")[index];
+    const btn = plantDiv.querySelector(".activate");
+
+    btn.innerText = "Activated";
+    btn.style.background = "#dc2626";
+    btn.style.color = "#ffffff";
+    btn.disabled = true;
+  }
+}
     const card = document.getElementById("userCard");
 
     card.innerHTML = `
@@ -710,4 +723,4 @@ if (data.activePlant) {
 </script>
 
 </body>
-    </html>
+  </html>
