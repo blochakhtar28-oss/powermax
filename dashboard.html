@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -620,6 +620,7 @@ document.getElementById("closeWithdraw").onclick = function () {
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCzHxyLgn9ZKRwD1X0RuUSq3od6MWizieg",
@@ -632,15 +633,39 @@ document.getElementById("closeWithdraw").onclick = function () {
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+  const db = getFirestore(app);
 
-  // 🔒 LOGIN CHECK
-  onAuthStateChanged(auth, (user) => {
+  // 🔒 AUTH CHECK + DATA LOAD
+  onAuthStateChanged(auth, async (user) => {
     if (!user) {
-      // login نہیں ہے → واپس index.html
       window.location.href = "index.html";
+      return;
+    }
+
+    try {
+      const userRef = doc(db, "users", user.uid);
+      const snap = await getDoc(userRef);
+
+      if (!snap.exists()) {
+        alert("User record not found!");
+        return;
+      }
+
+      const data = snap.data();
+
+      // 🔹 REAL DATA SHOW
+      document.querySelector(".user-card").innerHTML = `
+        <p><b>User ID:</b> ${data.refCode}</p>
+        <p><b>Balance:</b> ${data.balance} PTS</p>
+        <p><b>Name:</b> ${user.displayName}</p>
+      `;
+
+    } catch (err) {
+      console.error("Dashboard load error:", err);
+      alert("Something went wrong. Please reload.");
     }
   });
 </script>
 
 </body>
-       </html>
+ </html>
