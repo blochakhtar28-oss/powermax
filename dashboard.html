@@ -308,9 +308,9 @@ body{
 
 <!-- USER INFO -->
 <div class="user-card">
-  <p><b>User ID:</b> PMX12345</p>
-  <p><b>Balance:</b> 0 PTS</p>
-  <p><b>Name:</b> John Doe</p>  
+  <p><b>User ID:</b> <span id="uidText">Loading...</span></p>
+  <p><b>Balance:</b> <span id="balanceText">0</span> PTS</p>
+  <p><b>Name:</b> <span id="nameText">Loading...</span></p>  
 </div>
 
 <!-- PLANTS -->
@@ -620,7 +620,8 @@ document.getElementById("closeWithdraw").onclick = function () {
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
+import { getFirestore, doc, getDoc }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
   const firebaseConfig = {
     apiKey: "AIzaSyCzHxyLgn9ZKRwD1X0RuUSq3od6MWizieg",
     authDomain: "powermax-fe149.firebaseapp.com",
@@ -632,15 +633,30 @@ document.getElementById("closeWithdraw").onclick = function () {
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
-
+const db = getFirestore(app);
   // 🔒 LOGIN CHECK
-  onAuthStateChanged(auth, (user) => {
-    if (!user) {
-      // login نہیں ہے → واپس index.html
-      window.location.href = "index.html";
-    }
-  });
+  onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    window.location.href = "index.html";
+    return;
+  }
+
+  // USER ID
+  document.getElementById("uidText").innerText = user.uid;
+
+  // FIRESTORE USER DATA
+  const userRef = doc(db, "users", user.uid);
+  const snap = await getDoc(userRef);
+
+  if (snap.exists()) {
+    const data = snap.data();
+
+    document.getElementById("balanceText").innerText = data.balance ?? 0;
+    document.getElementById("nameText").innerText =
+      user.displayName ?? "No Name";
+  }
+});
 </script>
 
 </body>
-                   </html>
+     </html>
