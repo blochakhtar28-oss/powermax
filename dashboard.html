@@ -1,4 +1,4 @@
-   <!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -20,55 +20,14 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
 .btn-active{background:#e8eef6}
 .btn-on{background:#00c853;color:#fff}
 
-/* ===== PLANT TEXT – UI MATCHED (CLEAN & PREMIUM) ===== */
-
-/* 50 PTS – Green */
-.green h3,
-.green p{
-  color:#f0fdf4;
-}
-
-/* 100 PTS – Yellow */
-.yellow h3,
-.yellow p{
-  color:#1f2937;   /* dark text – yellow UI rule */
-}
-
-/* 300 PTS – Purple */
-.purple h3,
-.purple p{
-  color:#faf5ff;
-}
-
-/* 500 PTS – Blue */
-.blue h3,
-.blue p{
-  color:#f0f9ff;
-}
-
-/* 1000 PTS – Lavender */
-.lavender h3,
-.lavender p{
-  color:#fdf4ff;
-}
-
-/* 2000 PTS – Pink */
-.pink h3,
-.pink p{
-  color:#fff1f2;
-}
-
-/* 3000 PTS – Mint */
-.mint h3,
-.mint p{
-  color:#ecfeff;
-}
-
-/* 5000 PTS – Gray */
-.gray h3,
-.gray p{
-  color:#f8fafc;
-}
+.p50 div, .p50 div small { color: #e6f4ea; }      /* Text on Green background */
+.p100 div, .p100 div small { color: #fff9db; }    /* Text on Yellow background */
+.p300 div, .p300 div small { color: #e9d7ff; }    /* Text on Purple background */
+.p500 div, .p500 div small { color: #d0f0ff; }    /* Text on Blue background */
+.p1000 div, .p1000 div small { color: #e3d7ff; }  /* Text on Lavender background */
+.p2000 div, .p2000 div small { color: #ffd6e0; }  /* Text on Pink background */
+.p3000 div, .p3000 div small { color: #c3f4f0; }  /* Text on Mint background */
+.p5000 div, .p5000 div small { color: #d9dce2; }  /* Text on Gray background */
 /* ===== HISTORY / REFER COMMON POPUP UI ===== */
 .history-box{
   background:#fff;
@@ -180,84 +139,6 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
   background:#fff;
   font-weight:700;
 }
-/* ===== DEPOSIT MODAL ===== */
-.dep-modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.6);
-  display:none;
-  justify-content:center;
-  align-items:center;
-  z-index:999;
-}
-
-.dep-box{
-  background:#ffffff;
-  width:92%;
-  max-width:380px;
-  border-radius:18px;
-  padding:20px;
-  color:#020617;
-}
-
-.dep-title{
-  font-size:18px;
-  font-weight:800;
-  color:#2563eb;
-  margin-bottom:10px;
-}
-
-.dep-field{
-  margin-bottom:12px;
-}
-
-.dep-field label{
-  font-size:13px;
-  font-weight:700;
-}
-
-.dep-field select,
-.dep-field input{
-  width:100%;
-  padding:10px;
-  border-radius:12px;
-  border:1px solid #cbd5f5;
-  margin-top:6px;
-}
-
-.wallet-row{
-  display:flex;
-  gap:8px;
-}
-
-.wallet-row input{
-  flex:1;
-}
-
-.dep-actions{
-  display:flex;
-  gap:10px;
-  margin-top:14px;
-}
-
-.confirm-btn{
-  flex:1;
-  background:linear-gradient(135deg,#ef4444,#f97316);
-  border:none;
-  color:#fff;
-  padding:12px;
-  border-radius:14px;
-  font-weight:800;
-}
-
-.cancel-btn{
-  flex:1;
-  background:#fff;
-  border:2px solid #64748b;
-  padding:12px;
-  border-radius:14px;
-  font-weight:800;
-}
 </style>
 </head>
 
@@ -270,7 +151,6 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
   <div><b>User ID:</b> <span id="userId">Loading...</span></div>
   <div><b>Balance:</b> <span id="userBalance">0</span> PTS</div>
   <div id="useremail">Loading...</div>
-  <div><b>Referred By:</b> <span id="referredBy">None</span></div>
 </div>
 
 <!-- ALL PTS PLANTS -->
@@ -287,7 +167,7 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
 
 <div class="actions">
   <button class="refer" onclick="openRefer()">Refer & Earn</button>
-  <button class="deposit" id="openDeposit">Deposit</button>
+  <button class="deposit" onclick="openDeposit()">Deposit</button>
   <button class="withdraw" onclick="openWithdraw()">Withdraw</button>
   <button class="support" onclick="openWhatsAppSupport()">
   WhatsApp Support
@@ -310,12 +190,10 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
     </div>
 
     <h4 class="level l1">Level 1 Team</h4>
-    <div class="level-box" id="directCommissionBox">
-  No direct commissions yet.
-</div>
+    <div class="level-box">No members yet.</div>
 
-    <h4 class="level l2">Level 2 Team</h4>
-    <div class="level-box" id="indirectCommissionBox">No members yet.</div>
+    <h4 class="level l2">Level 2 Team (3%)</h4>
+    <div class="level-box">No members yet.</div>
 
     <button id="closeReferral" class="close-ref">Close</button>
 
@@ -327,7 +205,7 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
 
     <h3>📜 Transaction History</h3>
 
-    <div id="historyList">Loading...</div>
+    <div class="history-item">
       <b>Deposit:</b> 500 PTS<br>
       <span class="history-status-approved">Approved</span><br>
       <small>02 Jan 2026, 04:20 PM</small>
@@ -351,105 +229,6 @@ body{background:linear-gradient(180deg,#eef3f9,#f9fbfd);display:flex;justify-con
 
   </div>
 </div>
-</div>
-<!-- ===== WITHDRAW POPUP ===== -->
-<div id="withdrawModal" class="dep-modal">
-  <div class="dep-box">
-
-    <h3 class="dep-title">💸 Withdraw PTS</h3>
-
-    <div class="dep-field">
-      <small style="color:#dc2626;font-weight:700">
-        Minimum withdrawal: 10 PTS
-      </small>
-    </div>
-
-    <div class="dep-field">
-      <label>Amount (Min 10 PTS)</label>
-      <input id="withdrawAmount" type="number" min="10" placeholder="Enter amount">
-    </div>
-
-    <div class="dep-field">
-      <label>Withdraw Method</label>
-      <select id="withdrawMethod">
-        <option value="jazz">JazzCash</option>
-        <option value="easy">EasyPaisa</option>
-      </select>
-    </div>
-
-    <div class="dep-field">
-      <label>Wallet Owner Name</label>
-      <input id="withdrawName" type="text" placeholder="Enter your registered name">
-    </div>
-
-    <div class="dep-field">
-      <label>Account Number (JazzCash / EasyPaisa)</label>
-      <input id="withdrawAccount" type="text" maxlength="11" placeholder="Enter 11 digit account number">
-    </div>
-
-    <div class="dep-actions">
-      <button class="confirm-btn" id="confirmWithdraw">
-  Request Withdraw
-</button>
-      <button id="closeWithdraw" class="cancel-btn">Cancel</button>
-    </div>
-
-  </div>
-</div>
-<!-- ===== DEPOSIT POPUP ===== -->
-<div id="depositModal" class="dep-modal">
-  <div class="dep-box">
-
-    <h3 class="dep-title">💰 Deposit Chips</h3>
-
-    <div class="dep-field">
-      <label>Amount (PTS)</label>
-      <select>
-        <option>50 PTS</option>
-        <option>100 PTS</option>
-        <option>300 PTS</option>
-        <option>500 PTS</option>
-        <option>1000 PTS</option>
-        <option>2000 PTS</option>
-        <option>3000 PTS</option>
-        <option>5000 PTS</option>
-      </select>
-    </div>
-
-    <div class="dep-field">
-      <label>Wallet (Send To)</label>
-      <select id="walletSelect">
-        <option value="jazz">JazzCash</option>
-        <option value="easy">Easypaisa</option>
-      </select>
-    </div>
-
-    <div class="dep-field">
-      <label>Wallet Number (Send To)</label>
-      <div class="wallet-row">
-        <input id="walletNumber" type="text" value="03090447488" readonly>
-        <button class="copy-btn" onclick="copyDepositNumber()">Copy</button>
-      </div>
-    </div>
-
-    <div class="dep-field">
-      <label>Wallet Owner Name (Sent From)</label>
-      <input type="text" placeholder="Enter wallet owner name">
-    </div>
-
-    <div class="dep-field">
-      <label>Your Wallet Number (Sent From)</label>
-      <input type="text" placeholder="Enter your wallet number">
-    </div>
-
-    <div class="dep-actions">
-      <button class="confirm-btn" id="confirmDeposit">
-  Confirm Request
-</button>
-      <button id="closeDeposit" class="cancel-btn">Cancel</button>
-    </div>
-
-  </div>
 </div>
 <script type="module">
 
@@ -475,7 +254,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-     apiKey: "AIzaSyCzHxyLgn9ZKRwD1X0RuUSq3od6MWizieg",
+  apiKey: "AIzaSyCzHxyLgn9ZKRwD1X0RuUSq3od6MWizieg",
   authDomain: "powermax-fe149.firebaseapp.com",
   projectId: "powermax-fe149"
 };
@@ -567,12 +346,6 @@ window.IS_ADMIN = admin;
 
     document.getElementById("userId").innerText =
       snap.data().refCode ?? "NO REF";
-      document.getElementById("referredBy").innerText =
-  snap.data().referredBy ?? "Direct / No Referrer";
-      const refCode = snap.data().refCode;
-const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, "");
-const referralLink = `${baseUrl}/index.html?ref=${refCode}`;
-document.getElementById("refLinkInput").value = referralLink;
       const plantRef = doc(db, "users", user.uid, "plants", "active");
   const plantSnap = await getDoc(plantRef);
 
@@ -598,220 +371,9 @@ document.getElementById("refLinkInput").value = referralLink;
   }
   }
 });
-window.logout = async function () {
-  await signOut(auth);
-  location.href = "index.html";
-};
 
-/* ====== DEPOSIT REQUEST SAVE CODE ====== */
-document.getElementById("confirmDeposit").onclick = async () => {
-  const user = auth.currentUser;
-  // ⏳ CHECK: 24 HOURS DEPOSIT LIMIT
-const now = new Date();
-const last24Hours = new Date(
-  now.getTime() - 24 * 60 * 60 * 1000
-);
 
-const depositQuery = query(
-  collection(db, "deposits"),
-  where("uid", "==", user.uid)
-);
 
-const depositSnap = await getDocs(depositQuery);
-
-let alreadyDeposited = false;
-
-depositSnap.forEach(d => {
-  const time = new Date(d.data().createdAt);
-  if (time > last24Hours) {
-    alreadyDeposited = true;
-  }
-});
-
-if (alreadyDeposited) {
-  alert("❌ You can only send ONE deposit request in 24 hours.");
-  return;
-}
-  if (!user) {
-    alert("User not logged in");
-    return;
-  }
-
-  const amountText =
-    document.querySelector("#depositModal select").value;
-  const amount = parseInt(amountText);
-
-  }  const walletType = document.getElementById("walletSelect").value;
-  const adminWallet = document.getElementById("walletNumber").value;
-
-  const senderName =
-    document.querySelectorAll("#depositModal input")[1].value;
-  const senderNumber =
-    document.querySelectorAll("#depositModal input")[2].value;
-
-  if (!senderName || !senderNumber) {
-    alert("Please fill all fields");
-    return;
-  }
-
-  await addDoc(collection(db, "deposits"), {
-    uid: user.uid,
-    email: user.email,
-    amount: amount,
-    walletType: walletType,
-    adminWallet: adminWallet,
-    senderName: senderName,
-    senderNumber: senderNumber,
-    status: "pending",
-    createdAt: new Date().toISOString()
-  });
-
-  alert("Deposit request submitted");
-  document.getElementById("depositModal").style.display = "none";
-};
-/* ====== WITHDRAW REQUEST SAVE CODE ====== */
-document.getElementById("confirmWithdraw").onclick = async () => {
-  const user = auth.currentUser;
-  // ⏳ CHECK: 24 HOURS WITHDRAW LIMIT
-const now = new Date();
-const last24Hours = new Date(
-  now.getTime() - 24 * 60 * 60 * 1000
-);
-
-const withdrawQuery = query(
-  collection(db, "withdraws"),
-  where("uid", "==", user.uid)
-);
-
-const withdrawSnap = await getDocs(withdrawQuery);
-
-let alreadyWithdrawn = false;
-
-withdrawSnap.forEach(d => {
-  const time = new Date(d.data().createdAt);
-  if (time > last24Hours) {
-    alreadyWithdrawn = true;
-  }
-});
-
-if (alreadyWithdrawn) {
-  alert("❌ You can only request ONE withdrawal in 24 hours.");
-  return;
-}
-  if (!user) {
-    alert("User not logged in");
-    return;
-  }
-
-  const amount = parseInt(
-    document.getElementById("withdrawAmount").value
-  );
-  const method = document.getElementById("withdrawMethod").value;
-  const name = document.getElementById("withdrawName").value;
-  const account = document.getElementById("withdrawAccount").value;
-
-  if (!amount || amount < 10) {
-    alert("Minimum withdrawal is 10 PTS");
-    return;
-  }
-
-  if (!name || !account) {
-    alert("Please fill all fields");
-    return;
-  }
-
-  const userRef = doc(db, "users", user.uid);
-  const snap = await getDoc(userRef);
-  const balance = snap.data().balance || 0;
-
-  if (balance < amount) {
-    alert("Insufficient balance");
-    return;
-  }
-
-  await addDoc(collection(db, "withdraws"), {
-    uid: user.uid,
-    amount: amount,
-    method: method,
-    walletName: name,
-    walletNumber: account,
-    status: "pending",
-    createdAt: new Date().toISOString()
-  });
-
-  alert("Withdraw request submitted");
-  document.getElementById("withdrawModal").style.display = "none";
-};
-async function loadHistory() {
-  const user = auth.currentUser;
-  if (!user) return;
-
-  const box = document.getElementById("historyList");
-  box.innerHTML = "Loading...";
-
-  let history = [];
-
-  // 🔹 Deposits
-  const depSnap = await getDocs(
-    query(
-      collection(db, "deposits"),
-      where("uid", "==", user.uid)
-    )
-  );
-
-  depSnap.forEach(d => {
-    history.push({
-      type: "Deposit",
-      amount: d.data().amount,
-      status: d.data().status,
-      time: d.data().createdAt
-    });
-  });
-
-  // 🔹 Withdraws
-  const withSnap = await getDocs(
-    query(
-      collection(db, "withdraws"),
-      where("uid", "==", user.uid)
-    )
-  );
-
-  withSnap.forEach(d => {
-    history.push({
-      type: "Withdraw",
-      amount: d.data().amount,
-      status: d.data().status,
-      time: d.data().createdAt
-    });
-  });
-
-  if (history.length === 0) {
-    box.innerHTML = "No transactions yet.";
-    return;
-  }
-
-  // 🔽 Sort by latest
-  history.sort((a, b) => new Date(b.time) - new Date(a.time));
-
-  box.innerHTML = "";
-
-  history.forEach(h => {
-    let statusClass = "history-status-pending";
-    if (h.status === "approved") statusClass = "history-status-approved";
-    if (h.status === "rejected") statusClass = "history-status-cancel";
-
-    box.innerHTML += `
-      <div class="history-item">
-        <b>${h.type}:</b> ${h.amount} PTS<br>
-        <span class="${statusClass}">
-          ${h.status.toUpperCase()}
-        </span><br>
-        <small>${new Date(h.time).toLocaleString()}</small>
-      </div>
-    `;
-  });
-}
-   
 window.openWhatsAppSupport = () => {
   const user = auth.currentUser;
 
@@ -838,46 +400,8 @@ My Query is: `;
 
   window.open(url, "_blank");
 };
-document.getElementById("openHistory").onclick = async () => {
+document.getElementById("openHistory").onclick = () => {
   document.getElementById("historyPopup").style.display = "flex";
-  await loadHistory();
-};
-/* OPEN DEPOSIT */
-document.getElementById("openDeposit").onclick = function () {
-  document.getElementById("depositModal").style.display = "flex";
-};
-
-/* CLOSE DEPOSIT */
-document.getElementById("closeDeposit").onclick = function () {
-  document.getElementById("depositModal").style.display = "none";
-};
-
-/* OPEN WITHDRAW */
-window.openWithdraw = () => {
-  document.getElementById("withdrawModal").style.display = "flex";
-};
-
-/* CLOSE WITHDRAW */
-document.getElementById("closeWithdraw").onclick = () => {
-  document.getElementById("withdrawModal").style.display = "none";
-};
-
-/* AUTO CHANGE NUMBER */
-document.getElementById("walletSelect").onchange = function () {
-  const num = document.getElementById("walletNumber");
-  if(this.value === "jazz"){
-    num.value = "03090447488";
-  }else{
-    num.value = "03008775258";
-  }
-};
-
-/* COPY NUMBER */
-window.copyDepositNumber = function () {
-  const input = document.getElementById("walletNumber");
-  input.select();
-  input.setSelectionRange(0, 99999);
-  navigator.clipboard.writeText(input.value);
 };
 window.activatePlan = async (planName, commission, btn) => {
   const user = auth.currentUser;
@@ -942,16 +466,6 @@ const selfCommission = plantPts * (DIRECT_COMMISSION / 100);
 await updateDoc(doc(db, "users", user.uid), {
   balance: increment(selfCommission)
 });
-// 🔹 LEVEL 1 – DIRECT COMMISSION LOG
-await addDoc(
-  collection(db, "users", user.uid, "directCommissions"),
-  {
-    fromUser: user.uid,
-    amount: selfCommission,
-    plan: planName,
-    createdAt: new Date().toISOString()
-  }
-);
 
 /* =========================
    2️⃣ REFERRAL COMMISSION
@@ -979,16 +493,6 @@ if (userSnap.exists()) {
       await updateDoc(doc(db, "users", refDoc.id), {
         balance: increment(refCommission)
       });
-      // 📝 LOG INDIRECT COMMISSION (for Refer & Earn UI)
-await addDoc(
-  collection(db, "users", refDoc.id, "indirectCommissions"),
-  {
-    fromUser: user.uid,
-    amount: refCommission,
-    plan: planName,
-    createdAt: new Date().toISOString()
-  }
-);
     }
   }
 }
@@ -1011,78 +515,12 @@ await addDoc(
         <b>Expiry:</b><br>${expiry.toLocaleString()}
   `;
 };
-window.logout = async function () {
-  try {
-    await signOut(auth);
-    location.href = "index.html";
-  } catch (e) {
-    alert("Logout failed");
-    console.error(e);
-  }
-};
 
+</script>
+<script>
 /* OPEN REFER POPUP */
 window.openRefer = () => {
   document.getElementById("referralModal").style.display = "flex";
-  (async () => {
-  const user = auth.currentUser;
-  if (!user) return;
-
-  /* ======================
-     DIRECT COMMISSIONS
-  ====================== */
-  const directBox = document.getElementById("directCommissionBox");
-  directBox.innerHTML = "Loading...";
-
-  const directSnap = await getDocs(
-    collection(db, "users", user.uid, "directCommissions")
-  );
-
-  if (directSnap.empty) {
-    directBox.innerHTML = "No direct commissions yet.";
-  } else {
-    directBox.innerHTML = "";
-    directSnap.forEach(d => {
-      const data = d.data();
-      directBox.innerHTML += `
-        <div class="history-item">
-          <b>${data.amount} PTS</b><br>
-          <small>${data.plan}</small><br>
-          <small>${new Date(data.createdAt).toLocaleString()}</small>
-        </div>
-      `;
-    });
-  }
-
-  /* ======================
-     INDIRECT COMMISSIONS
-  ====================== */
-  const indirectBox = document.querySelector(
-  "#directCommissionBox"
-).parentElement.querySelectorAll(".level-box")[1];
-  indirectBox.innerHTML = "Loading...";
-
-  const indirectSnap = await getDocs(
-    collection(db, "users", user.uid, "indirectCommissions")
-  );
-
-  if (indirectSnap.empty) {
-    indirectBox.innerHTML = "No referral earnings yet.";
-  } else {
-    indirectBox.innerHTML = "";
-    indirectSnap.forEach(d => {
-      const data = d.data();
-      indirectBox.innerHTML += `
-        <div class="history-item">
-          <b>${data.amount} PTS</b><br>
-          <small>From User: ${data.fromUser}</small><br>
-          <small>${data.plan}</small><br>
-          <small>${new Date(data.createdAt).toLocaleString()}</small>
-        </div>
-      `;
-    });
-  }
-})();
 };
 
 /* CLOSE REFER */
@@ -1100,5 +538,4 @@ document.getElementById("copyReferral").onclick = function () {
 </script>
 
 </body>
-  </html>
-    
+</html>
