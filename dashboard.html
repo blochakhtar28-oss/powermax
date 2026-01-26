@@ -620,48 +620,6 @@ document.getElementById("closeWithdraw").onclick = function () {
   import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 // ===== STEP-2: PLANT CLICK DETECTION =====
 const PLANT_AMOUNTS = [50,100,300,500,1000,2000,3000,5000];
-
-// ===== STEP-2 (part-2): REAL PLANT ACTIVATION =====
-document.querySelectorAll(".plant").forEach((plantDiv, index) => {
-  const btn = plantDiv.querySelector(".activate");
-  const amount = PLANT_AMOUNTS[index];
-
-  btn.onclick = async () => {
-    try {
-      const user = auth.currentUser;
-      if (!user) return;
-
-      const userRef = doc(db, "users", user.uid);
-      const snap = await getDoc(userRef);
-
-      if (!snap.exists()) {
-        alert("User record not found");
-        return;
-      }
-
-      const data = snap.data();
-
-      // ❌ already active
-      if (data.activePlant) {
-        alert("⚠️ Aap ka plant pehle se active hai");
-        return;
-      }
-
-      // ❌ balance low
-      if (data.balance < amount) {
-        alert("❌ Balance kam hai");
-        return;
-      }
-
-      // ✅ activate plant
-      await updateDoc(userRef, {
-        balance: data.balance - amount,
-        activePlant: {
-          amount: amount,
-          activatedAt: new Date()
-        }
-      });
-
       // ✅ UI UPDATE AFTER ACTIVATION
 btn.innerText = "Activated";
 btn.style.background = "#dc2626"; // red
@@ -690,6 +648,45 @@ alert(`✅ ${amount} PTS Plant Activated`);
   const db = getFirestore(app);
 
   onAuthStateChanged(auth, async (user) => {
+    // ===== PLANT ACTIVATION (SAFE PLACE) =====
+document.querySelectorAll(".plant").forEach((plantDiv, index) => {
+  const btn = plantDiv.querySelector(".activate");
+  const amount = PLANT_AMOUNTS[index];
+
+  btn.onclick = async () => {
+    if (!user) return;
+
+    const userRef = doc(db, "users", user.uid);
+    const snap = await getDoc(userRef);
+
+    if (!snap.exists()) return;
+
+    const data = snap.data();
+
+    if (data.activePlant) {
+      alert("⚠️ Plant already active");
+      return;
+    }
+
+    if (data.balance < amount) {
+      alert("❌ Balance kam hai");
+      return;
+    }
+
+    await updateDoc(userRef, {
+      balance: data.balance - amount,
+      activePlant: {
+        amount,
+        activatedAt: new Date()
+      }
+    });
+
+    btn.innerText = "Activated";
+    btn.style.background = "#dc2626";
+    btn.style.color = "#ffffff";
+    btn.disabled = true;
+  };
+});
     if (!user) {
       window.location.href = "index.html";
       return;
@@ -717,4 +714,4 @@ alert(`✅ ${amount} PTS Plant Activated`);
 </script>
 
 </body>
-      </html>
+  </html>
