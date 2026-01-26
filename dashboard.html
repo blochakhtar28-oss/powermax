@@ -618,7 +618,64 @@ document.getElementById("closeWithdraw").onclick = function () {
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+// ===== STEP-2: PLANT CLICK DETECTION =====
+const PLANT_AMOUNTS = [50,100,300,500,1000,2000,3000,5000];
 
+// ===== STEP-2 (part-2): REAL PLANT ACTIVATION =====
+document.querySelectorAll(".plant").forEach((plantDiv, index) => {
+  const btn = plantDiv.querySelector(".activate");
+  const amount = PLANT_AMOUNTS[index];
+
+  btn.onclick = async () => {
+    try {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const userRef = doc(db, "users", user.uid);
+      const snap = await getDoc(userRef);
+
+      if (!snap.exists()) {
+        alert("User record not found");
+        return;
+      }
+
+      const data = snap.data();
+
+      // ❌ already active
+      if (data.activePlant) {
+        alert("⚠️ Aap ka plant pehle se active hai");
+        return;
+      }
+
+      // ❌ balance low
+      if (data.balance < amount) {
+        alert("❌ Balance kam hai");
+        return;
+      }
+
+      // ✅ activate plant
+      await updateDoc(userRef, {
+        balance: data.balance - amount,
+        activePlant: {
+          amount: amount,
+          activatedAt: new Date()
+        }
+      });
+
+      // ✅ UI UPDATE AFTER ACTIVATION
+btn.innerText = "Activated";
+btn.style.background = "#dc2626"; // red
+btn.style.color = "#ffffff";
+btn.disabled = true;
+
+alert(`✅ ${amount} PTS Plant Activated`);
+
+    } catch (err) {
+      console.error(err);
+      alert("Activation failed");
+    }
+  };
+});
   const firebaseConfig = {
     apiKey: "AIzaSyCzHxyLgn9ZKRwD1X0RuUSq3od6MWizieg",
     authDomain: "powermax-fe149.firebaseapp.com",
