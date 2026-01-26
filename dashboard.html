@@ -446,7 +446,7 @@ body{
 
     <label class="ref-label">Your Referral Link</label>
     <div class="ref-link">
-      <input type="text" value="https://my-dears-66cad.web.app/?ref=PD1jp" readonly>
+      <input type="text" id="refLinkInput" value="Loading..." readonly>
       <button class="copy-btn" id="copyReferral">Copy</button>
     </div>
 
@@ -625,7 +625,7 @@ document.getElementById("closeWithdraw").onclick = function () {
     doc,
     getDoc,
     updateDoc,
-    serverTimestamp
+    runTransaction
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -641,8 +641,7 @@ document.getElementById("closeWithdraw").onclick = function () {
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  let currentUser = null;
-  let userData = null;
+  let currentUser, userData;
 
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
@@ -659,28 +658,30 @@ document.getElementById("closeWithdraw").onclick = function () {
     const userRef = doc(db, "users", user.uid);
     const snap = await getDoc(userRef);
 
-    if (snap.exists()) {
-      userData = snap.data();
-      document.getElementById("balanceText").innerText =
-        userData.balance ?? 0;
+    if (!snap.exists()) return;
 
-      checkActivePlanUI(userData.activePlan);
-    }
+    userData = snap.data();
+    document.getElementById("balanceText").innerText =
+      userData.balance ?? 0;
+
+    // 🔗 REAL REFERRAL LINK
+    document.getElementById("refLinkInput").value =
+      `${location.origin}/index.html?ref=${user.uid}`;
+
+    checkActivePlanUI(userData.activePlan);
   });
 
   function checkActivePlanUI(activePlan) {
     const now = Date.now();
-
     document.querySelectorAll(".activate").forEach((btn) => {
       const amount = Number(btn.dataset.amount);
-
       if (
         activePlan &&
         activePlan.amount === amount &&
         activePlan.expiresAt.toMillis() > now
       ) {
         btn.innerText = "Activated";
-        btn.style.background = "#dc2626";
+        btn.style.background = "#16a34a";
         btn.disabled = true;
       }
     });
@@ -688,12 +689,9 @@ document.getElementById("closeWithdraw").onclick = function () {
 
   document.querySelectorAll(".activate").forEach((btn) => {
     btn.onclick = async () => {
-      if (!userData) return;
-
       const amount = Number(btn.dataset.amount);
       const now = Date.now();
 
-      // 🔒 already active plan
       if (
         userData.activePlan &&
         userData.activePlan.expiresAt.toMillis() > now
@@ -704,7 +702,6 @@ document.getElementById("closeWithdraw").onclick = function () {
         return;
       }
 
-      // 🔒 balance check
       if (userData.balance < amount) {
         alert("Insufficient balance");
         return;
@@ -715,14 +712,34 @@ document.getElementById("closeWithdraw").onclick = function () {
         activatedAt.getTime() + 15 * 24 * 60 * 60 * 1000
       );
 
-      const userRef = doc(db, "users", currentUser.uid);
+      await runTransaction(db, async (tx) => {
+        const userRef = doc(db, "users", currentUser.uid);
+        const userSnap = await tx.get(userRef);
 
-      await updateDoc(userRef, {
-        balance: userData.balance - amount,
-        activePlan: {
-          amount: amount,
-          activatedAt: activatedAt,
-          expiresAt: expiresAt
+        if (!userSnap.exists()) return;
+
+        const uData = userSnap.data();
+
+        tx.update(userRef, {
+          balance: uData.balance - amount,
+          activePlan: {
+            amount,
+            activatedAt,
+            expiresAt
+          }
+        });
+
+        // 💰 REFERRAL COMMISSION
+        if (uData.referredBy) {
+          const refRef = doc(db, "users", uData.referredBy);
+          const refSnap = await tx.get(refRef);
+
+          if (refSnap.exists()) {
+            const commission = amount * 0.9;
+            tx.update(refRef, {
+              balance: (refSnap.data().balance ?? 0) + commission
+            });
+          }
         }
       });
 
@@ -733,4 +750,4 @@ document.getElementById("closeWithdraw").onclick = function () {
 </script>
 
 </body>
-         </html>
+ </html>
