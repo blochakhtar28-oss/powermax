@@ -651,26 +651,36 @@ document.getElementById("closeWithdraw").onclick = function () {
 
     currentUser = user;
 
-    document.getElementById("uidText").innerText = user.uid;
-    document.getElementById("nameText").innerText =
-      user.email.split("@")[0];
+const userRef = doc(db, "users", user.uid);
 
-    const userRef = doc(db, "users", user.uid);
-    const snap = await getDoc(userRef);
+// 🔹 FETCH USER DATA
+const snap = await getDoc(userRef);
+if (!snap.exists()) return;
 
-    if (!snap.exists()) return;
+userData = snap.data();
 
-    userData = snap.data();
-    document.getElementById("balanceText").innerText =
-      userData.balance ?? 0;
+document.getElementById("uidText").innerText = user.uid;
+document.getElementById("nameText").innerText = user.email.split("@")[0];
 
-    // 🔗 REAL REFERRAL LINK (FIXED)
+// 🔗 REFERRAL LINK
 const refCode = user.uid;
 const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, "");
 const referralLink = `${baseUrl}/index.html?ref=${refCode}`;
 document.getElementById("refLinkInput").value = referralLink;
 
-    checkActivePlanUI(userData.activePlan);
+// 🔹 Update UI & buttons
+document.getElementById("balanceText").innerText = userData.balance ?? 0;
+checkActivePlanUI(userData.activePlan);
+
+// 🔹 REFRESH USER DATA AFTER A SHORT DELAY
+// This ensures referral bonus is included
+setTimeout(async () => {
+  const refreshedSnap = await getDoc(userRef);
+  if (!refreshedSnap.exists()) return;
+  userData = refreshedSnap.data();
+  document.getElementById("balanceText").innerText = userData.balance ?? 0;
+  checkActivePlanUI(userData.activePlan);
+}, 2000); // 2 second delay to ensure referral bonus is applied
   });
 
   function checkActivePlanUI(activePlan) {
