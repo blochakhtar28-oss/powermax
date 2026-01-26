@@ -319,7 +319,7 @@ body{
     <h3>50 PTS Plant</h3>
     <p>Commission 90%</p>
   </div>
-  <button class="activate">Activate</button>
+  <button class="activate" data-amount="50">Activate</button>
 </div>
 
 <div class="plant yellow">
@@ -327,7 +327,7 @@ body{
     <h3>100 PTS Plant</h3>
     <p>Commission 90%</p>
   </div>
-  <button class="activate">Activate</button>
+  <button class="activate" data-amount="100">Activate</button>
 </div>
 
 <div class="plant purple">
@@ -335,7 +335,7 @@ body{
     <h3>300 PTS Plant</h3>
     <p>Commission 90%</p>
   </div>
-  <button class="activate">Activate</button>
+  <button class="activate" data-amount="300">Activate</button>
 </div>
 
 <div class="plant blue">
@@ -343,7 +343,7 @@ body{
     <h3>500 PTS Plant</h3>
     <p>Commission 90%</p>
   </div>
-  <button class="activate">Activate</button>
+  <button class="activate" data-amount="500">Activate</button>
 </div>
 
 <div class="plant lavender">
@@ -351,7 +351,7 @@ body{
     <h3>1000 PTS Plant</h3>
     <p>Commission 90%</p>
   </div>
-  <button class="activate">Activate</button>
+  <button class="activate" data-amount="1000">Activate</button>
 </div>
 
 <div class="plant pink">
@@ -359,7 +359,7 @@ body{
     <h3>2000 PTS Plant</h3>
     <p>Commission 90%</p>
   </div>
-  <button class="activate">Activate</button>
+  <button class="activate" data-amount="2000">Activate</button>
 </div>
 
 <div class="plant mint">
@@ -367,7 +367,7 @@ body{
     <h3>3000 PTS Plant</h3>
     <p>Commission 90%</p>
   </div>
-  <button class="activate">Activate</button>
+  <button class="activate" data-amount="3000">Activate</button>
 </div>
 
 <div class="plant gray">
@@ -375,7 +375,7 @@ body{
     <h3>5000 PTS Plant</h3>
     <p>Commission 90%</p>
   </div>
-  <button class="activate">Activate</button>
+  <button class="activate" data-amount="5000">Activate</button>
 </div>
 
 <!-- ACTION BUTTONS -->
@@ -620,7 +620,13 @@ document.getElementById("closeWithdraw").onclick = function () {
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import {
+    getFirestore,
+    doc,
+    getDoc,
+    updateDoc,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCzHxyLgn9ZKRwD1X0RuUSq3od6MWizieg",
@@ -635,31 +641,96 @@ document.getElementById("closeWithdraw").onclick = function () {
   const auth = getAuth(app);
   const db = getFirestore(app);
 
+  let currentUser = null;
+  let userData = null;
+
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
       window.location.href = "index.html";
       return;
     }
 
-    // 🔹 UID show
+    currentUser = user;
+
     document.getElementById("uidText").innerText = user.uid;
+    document.getElementById("nameText").innerText =
+      user.email.split("@")[0];
 
-    // 🔹 Email name (before @)
-    const emailName = user.email.split("@")[0];
-    document.getElementById("nameText").innerText = emailName;
-
-    // 🔹 Balance from Firestore
     const userRef = doc(db, "users", user.uid);
     const snap = await getDoc(userRef);
 
     if (snap.exists()) {
-      const data = snap.data();
-      document.getElementById("balanceText").innerText = data.balance ?? 0;
-    } else {
-      document.getElementById("balanceText").innerText = 0;
+      userData = snap.data();
+      document.getElementById("balanceText").innerText =
+        userData.balance ?? 0;
+
+      checkActivePlanUI(userData.activePlan);
     }
+  });
+
+  function checkActivePlanUI(activePlan) {
+    const now = Date.now();
+
+    document.querySelectorAll(".activate").forEach((btn) => {
+      const amount = Number(btn.dataset.amount);
+
+      if (
+        activePlan &&
+        activePlan.amount === amount &&
+        activePlan.expiresAt.toMillis() > now
+      ) {
+        btn.innerText = "Activated";
+        btn.style.background = "#dc2626";
+        btn.disabled = true;
+      }
+    });
+  }
+
+  document.querySelectorAll(".activate").forEach((btn) => {
+    btn.onclick = async () => {
+      if (!userData) return;
+
+      const amount = Number(btn.dataset.amount);
+      const now = Date.now();
+
+      // 🔒 already active plan
+      if (
+        userData.activePlan &&
+        userData.activePlan.expiresAt.toMillis() > now
+      ) {
+        alert(
+          "You already have an active plan. Please wait until it expires."
+        );
+        return;
+      }
+
+      // 🔒 balance check
+      if (userData.balance < amount) {
+        alert("Insufficient balance");
+        return;
+      }
+
+      const activatedAt = new Date();
+      const expiresAt = new Date(
+        activatedAt.getTime() + 15 * 24 * 60 * 60 * 1000
+      );
+
+      const userRef = doc(db, "users", currentUser.uid);
+
+      await updateDoc(userRef, {
+        balance: userData.balance - amount,
+        activePlan: {
+          amount: amount,
+          activatedAt: activatedAt,
+          expiresAt: expiresAt
+        }
+      });
+
+      alert("Plan activated successfully");
+      location.reload();
+    };
   });
 </script>
 
 </body>
-     </html>
+         </html>
