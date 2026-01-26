@@ -307,10 +307,7 @@ body{
 <h2 class="dash-title">⚡ PowerMax Dashboard ⚡</h2>
 
 <!-- USER INFO -->
-<div class="user-card">
-  <p><b>User ID:</b> PMX12345</p>
-  <p><b>Balance:</b> 0 PTS</p>
-  <p><b>Name:</b> John Doe</p>
+<div class="user-card" id="userCard" style="display:none">
 </div>
 
 <!-- PLANTS -->
@@ -635,37 +632,32 @@ document.getElementById("closeWithdraw").onclick = function () {
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  // 🔒 AUTH CHECK + DATA LOAD
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
       window.location.href = "index.html";
       return;
     }
 
-    try {
-      const userRef = doc(db, "users", user.uid);
-      const snap = await getDoc(userRef);
+    const userRef = doc(db, "users", user.uid);
+    const snap = await getDoc(userRef);
 
-      if (!snap.exists()) {
-        alert("User record not found!");
-        return;
-      }
-
-      const data = snap.data();
-
-      // 🔹 REAL DATA SHOW
-      document.querySelector(".user-card").innerHTML = `
-        <p><b>User ID:</b> ${data.refCode}</p>
-        <p><b>Balance:</b> ${data.balance} PTS</p>
-        <p><b>Name:</b> ${user.displayName}</p>
-      `;
-
-    } catch (err) {
-      console.error("Dashboard load error:", err);
-      alert("Something went wrong. Please reload.");
+    if (!snap.exists()) {
+      alert("User data not found");
+      return;
     }
+
+    const data = snap.data();
+    const card = document.getElementById("userCard");
+
+    card.innerHTML = `
+      <p><b>User ID:</b> ${user.uid}</p>
+      <p><b>Balance:</b> ${data.balance} PTS</p>
+      <p><b>Name:</b> ${user.displayName}</p>
+    `;
+
+    card.style.display = "block";
   });
 </script>
 
 </body>
- </html>
+  </html>
