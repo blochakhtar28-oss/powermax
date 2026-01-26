@@ -390,7 +390,7 @@ body{
 </div>
 
 <button class="btn green-btn full">WhatsApp Support</button>
-<button class="btn red-btn full">Logout</button>
+<button class="btn red-btn full" id="logoutBtn">Logout</button>
 
 </div>
 <!-- ===== HISTORY POPUP ===== -->
@@ -446,7 +446,7 @@ body{
 
     <label class="ref-label">Your Referral Link</label>
     <div class="ref-link">
-      <input type="text" value="https://my-dears-66cad.web.app/?ref=PD1jp" readonly>
+      <input type="text" id="refLinkInput" value="Loading..." readonly>
       <button class="copy-btn" id="copyReferral">Copy</button>
     </div>
 
@@ -620,6 +620,7 @@ document.getElementById("closeWithdraw").onclick = function () {
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, doc, getDoc }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
   const firebaseConfig = {
@@ -654,9 +655,22 @@ const db = getFirestore(app);
     document.getElementById("balanceText").innerText = data.balance ?? 0;
     document.getElementById("nameText").innerText =
       user.displayName ?? "No Name";
+      // 🔗 REFERRAL LINK
+const refCode = data.refCode;
+const refLink = `${window.location.origin}/?ref=${refCode}`;
+
+document.getElementById("refLinkInput").value = refLink;
+  }
+});
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+  try {
+    await signOut(auth);
+    window.location.href = "index.html";
+  } catch (err) {
+    alert("Logout failed, try again");
   }
 });
 </script>
 
 </body>
-     </html>
+</html>
