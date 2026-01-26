@@ -655,11 +655,12 @@ const db = getFirestore(app);
     document.getElementById("balanceText").innerText = data.balance ?? 0;
     document.getElementById("nameText").innerText =
       user.displayName ?? "No Name";
-      // 🔗 REFERRAL LINK
-const refCode = data.refCode;
-const refLink = `${window.location.origin}/?ref=${refCode}`;
-
-document.getElementById("refLinkInput").value = refLink;
+      // 🔗 REFERRAL LINK (SAFE & STRONG)
+if (data.refCode && typeof data.refCode === "string") {
+  const refLink = `${window.location.origin}/?ref=${data.refCode}`;
+  document.getElementById("refLinkInput").value = refLink;
+} else {
+  document.getElementById("refLinkInput").value = "Referral code not generated";
   }
 });
 document.getElementById("logoutBtn").addEventListener("click", async () => {
