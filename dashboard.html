@@ -1,4 +1,4 @@
-here  <!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -307,7 +307,11 @@ body{
 <h2 class="dash-title">⚡ PowerMax Dashboard ⚡</h2>
 
 <!-- USER INFO -->
-<div class="user-card" id="userCard" style="display:none">
+<div class="user-card">
+  <p><b>User ID:</b> <span id="uid">---</span></p>
+  <p><b>Email:</b> <span id="email">---</span></p>
+  <p><b>Name:</b> <span id="name">---</span></p>
+  <p><b>Balance:</b> <span id="balance">0</span> PTS</p>
 </div>
 
 <!-- PLANTS -->
@@ -617,7 +621,7 @@ document.getElementById("closeWithdraw").onclick = function () {
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
   const firebaseConfig = {
     apiKey: "AIzaSyCzHxyLgn9ZKRwD1X0RuUSq3od6MWizieg",
     authDomain: "powermax-fe149.firebaseapp.com",
@@ -629,98 +633,36 @@ document.getElementById("closeWithdraw").onclick = function () {
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
-  const db = getFirestore(app);
 
-  onAuthStateChanged(auth, async (user) => {
-    // ===== PLANT ACTIVATION (SAFE PLACE) =====
-document.querySelectorAll(".plant").forEach((plantDiv, index) => {
-  const btn = plantDiv.querySelector(".activate");
-  const amount = PLANT_AMOUNTS[index];
+  // 🔒 LOGIN CHECK
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+  // AUTH DATA
+  document.getElementById("uid").innerText = user.uid.slice(0, 8);
+  document.getElementById("email").innerText = user.email || "---";
+  document.getElementById("name").innerText = user.displayName || "No Name";
 
-  btn.onclick = async () => {
-    if (!user) return;
+  // FIRESTORE BALANCE
+  import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js")
+    .then(({ getFirestore, doc, getDoc }) => {
+      const db = getFirestore();
+      const userRef = doc(db, "users", user.uid);
 
-    const userRef = doc(db, "users", user.uid);
-    const snap = await getDoc(userRef);
-
-    if (!snap.exists()) return;
-
-    const data = snap.data();
-// ===== RESTORE ACTIVE PLANT UI AFTER REFRESH =====
-if (data.activePlant) {
-  const index = PLANT_AMOUNTS.indexOf(data.activePlant.amount);
-  if (index !== -1) {
-    const plantDiv = document.querySelectorAll(".plant")[index];
-    const btn = plantDiv.querySelector(".activate");
-
-    btn.innerText = "Activated";
-    btn.style.background = "#dc2626";
-    btn.style.color = "#ffffff";
-    btn.disabled = true;
-  }
-}
-    if (data.activePlant) {
-      alert("⚠️ Plant already active");
-      return;
-    }
-
-    if (data.balance < amount) {
-      alert("❌ Balance kam hai");
-      return;
-    }
-
-    await updateDoc(userRef, {
-      balance: data.balance - amount,
-      activePlant: {
-        amount,
-        activatedAt: new Date()
-      }
+      getDoc(userRef).then((snap) => {
+        if (snap.exists()) {
+          document.getElementById("balance").innerText =
+            snap.data().balance ?? 0;
+        } else {
+          document.getElementById("balance").innerText = 0;
+        }
+      });
     });
 
-    btn.innerText = "Activated";
-    btn.style.background = "#dc2626";
-    btn.style.color = "#ffffff";
-    btn.disabled = true;
-  };
-});
-    if (!user) {
-      window.location.href = "index.html";
-      return;
-    }
-
-    const userRef = doc(db, "users", user.uid);
-    const snap = await getDoc(userRef);
-
-    if (!snap.exists()) {
-      alert("User data not found");
-      return;
-    }
-
-    const data = snap.data();
-    // ===== RESTORE ACTIVE PLANT UI AFTER REFRESH =====
-if (data.activePlant) {
-  const index = PLANT_AMOUNTS.indexOf(data.activePlant.amount);
-  if (index !== -1) {
-    const plantDiv = document.querySelectorAll(".plant")[index];
-    const btn = plantDiv.querySelector(".activate");
-
-    btn.innerText = "Activated";
-    btn.style.background = "#dc2626";
-    btn.style.color = "#ffffff";
-    btn.disabled = true;
-  }
+} else {
+  window.location.href = "index.html";
 }
-    const card = document.getElementById("userCard");
-
-    card.innerHTML = `
-      <p><b>User ID:</b> ${user.uid}</p>
-      <p><b>Balance:</b> ${data.balance} PTS</p>
-      <p><b>Name:</b> ${user.displayName}</p>
-    `;
-
-    card.style.display = "block";
   });
 </script>
 
 </body>
-  </html>
+    </html>
