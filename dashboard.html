@@ -308,9 +308,9 @@ body{
 
 <!-- USER INFO -->
 <div class="user-card">
-  <p><b>User ID:</b> <span id="uidText">Loading...</span></p>
-  <p><b>Balance:</b> <span id="balanceText">0</span> PTS</p>
-  <p><b>Name:</b> <span id="nameText">Loading...</span></p>  
+  <p><b>User ID:</b> PMX12345</p>
+  <p><b>Balance:</b> 0 PTS</p>
+  <p><b>Name:</b> John Doe</p>
 </div>
 
 <!-- PLANTS -->
@@ -390,7 +390,7 @@ body{
 </div>
 
 <button class="btn green-btn full">WhatsApp Support</button>
-<button class="btn red-btn full" id="logoutBtn">Logout</button>
+<button class="btn red-btn full">Logout</button>
 
 </div>
 <!-- ===== HISTORY POPUP ===== -->
@@ -446,7 +446,7 @@ body{
 
     <label class="ref-label">Your Referral Link</label>
     <div class="ref-link">
-      <input type="text" id="refLinkInput" value="Loading..." readonly>
+      <input type="text" value="https://my-dears-66cad.web.app/?ref=PD1jp" readonly>
       <button class="copy-btn" id="copyReferral">Copy</button>
     </div>
 
@@ -620,9 +620,7 @@ document.getElementById("closeWithdraw").onclick = function () {
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, getDoc }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
   const firebaseConfig = {
     apiKey: "AIzaSyCzHxyLgn9ZKRwD1X0RuUSq3od6MWizieg",
     authDomain: "powermax-fe149.firebaseapp.com",
@@ -634,44 +632,15 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
-const db = getFirestore(app);
+
   // 🔒 LOGIN CHECK
-  onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    window.location.href = "index.html";
-    return;
-  }
-
-  // USER ID
-  document.getElementById("uidText").innerText = user.uid;
-
-  // FIRESTORE USER DATA
-  const userRef = doc(db, "users", user.uid);
-  const snap = await getDoc(userRef);
-
-  if (snap.exists()) {
-    const data = snap.data();
-
-    document.getElementById("balanceText").innerText = data.balance ?? 0;
-    document.getElementById("nameText").innerText =
-      user.displayName ?? "No Name";
-      // 🔗 REFERRAL LINK (SAFE & STRONG)
-if (data.refCode && typeof data.refCode === "string") {
-  const refLink = `${window.location.origin}/?ref=${data.refCode}`;
-  document.getElementById("refLinkInput").value = refLink;
-} else {
-  document.getElementById("refLinkInput").value = "Referral code not generated";
-  }
-});
-document.getElementById("logoutBtn").addEventListener("click", async () => {
-  try {
-    await signOut(auth);
-    window.location.href = "index.html";
-  } catch (err) {
-    alert("Logout failed, try again");
-  }
-});
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      // login نہیں ہے → واپس index.html
+      window.location.href = "index.html";
+    }
+  });
 </script>
 
 </body>
-</html>
+       </html>
